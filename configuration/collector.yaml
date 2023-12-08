@@ -15,15 +15,6 @@ providers:
         # role: 
         regions:
           - us-east-1
-          - ap-south-1
-          - af-south-1
-          - ap-northeast-1
-          - ap-southeast-1
-          - eu-north-1
-          - eu-central-1
-          - eu-west-1
-          - us-east-2
-          - us-west-1
           - us-west-2
     metrics:
       rds:
@@ -37,16 +28,17 @@ providers:
           constraint:
             operator: "=="
             value: 0
-        - description: CPU Utilization
+      documentDB:
+        - description: Connection count
           enable: true
           metrics:
-            - name: CPUUtilization
-              statistic: Maximum
-          period: 24h
+            - name: DatabaseConnections
+              statistic: Sum
+          period: 24h 
           start_time: 168h # 24h * 7d
           constraint:
-            operator: "<"
-            value: 40
+            operator: "=="
+            value: 0
       elasticache:
         - description: Connection count
           enable: true
@@ -57,17 +49,7 @@ providers:
           start_time: 168h # 24h * 7d
           constraint:
             operator: "=="
-            value: 0
-        - description: CPU Utilization
-          enable: true
-          metrics:
-            - name: CPUUtilization
-              statistic: Maximum
-          period: 24h
-          start_time: 168h # 24h * 7d
-          constraint:
-            operator: "<"
-            value: 40     
+            value: 0      
       elb:
         - description: Request count
           enable: true
@@ -100,7 +82,7 @@ providers:
           start_time: 168h # 24h * 7d
           constraint:
             operator: "<"
-            value: 40
+            value: 6
       dynamodb:
         - description: Provisioned read capacity units
           enable: true

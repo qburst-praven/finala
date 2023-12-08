@@ -48,7 +48,6 @@ type DetectedAWSRDS struct {
 // RDSVolumeType will hold the available volume types for RDS types
 var rdsStorageType = map[string]string{
 	"gp2":      "General Purpose",
-	"gp3":      "General Purpose",
 	"standard": "Magnetic",
 	"io1":      "Provisioned IOPS",
 	"aurora":   "General Purpose-Aurora",
@@ -235,7 +234,7 @@ func (r *RDSManager) getHourlyStoragePrice(instance *rds.DBInstance, pricingRegi
 			storagePricingFilters = r.getPricingAuroraStorageFilterInput(rdsStorageType, pricingRegionPrefix)
 		default:
 			deploymentOption := r.getPricingDeploymentOption(instance)
-			storagePricingFilters = r.getPricingRDSStorageFilterInput(instance, rdsStorageType, deploymentOption)
+			storagePricingFilters = r.getPricingRDSStorageFilterInput(rdsStorageType, deploymentOption)
 		}
 
 		log.WithField("storage_filters", storagePricingFilters).Debug("pricing storage filters")
@@ -309,9 +308,7 @@ func (r *RDSManager) getPricingDeploymentOption(instance *rds.DBInstance) string
 }
 
 // getPricingRDSStorageFilterInput will set the right filters for RDS Storage pricing
-func (r *RDSManager) getPricingRDSStorageFilterInput(instance *rds.DBInstance, rdsStorageType string, deploymentOption string) pricing.GetProductsInput {
-
-	databaseEngine := r.getPricingDatabaseEngine(instance)
+func (r *RDSManager) getPricingRDSStorageFilterInput(rdsStorageType string, deploymentOption string) pricing.GetProductsInput {
 
 	return pricing.GetProductsInput{
 		ServiceCode: &r.servicePricingCode,
@@ -335,11 +332,6 @@ func (r *RDSManager) getPricingRDSStorageFilterInput(instance *rds.DBInstance, r
 				Type:  awsClient.String("TERM_MATCH"),
 				Field: awsClient.String("deploymentOption"),
 				Value: awsClient.String(deploymentOption),
-			},
-			{
-				Type:  awsClient.String("TERM_MATCH"),
-				Field: awsClient.String("databaseEngine"),
-				Value: &databaseEngine,
 			},
 		},
 	}
