@@ -3,7 +3,7 @@ package cmd
 import (
 	"finala/api"
 	"finala/api/config"
-	"finala/api/storage/elasticsearch"
+	"finala/api/storage/meilisearch"
 	"finala/serverutil"
 	"finala/visibility"
 	"os"
@@ -14,7 +14,6 @@ import (
 )
 
 var (
-
 	// port of the api
 	port int
 )
@@ -25,7 +24,6 @@ var apiServer = &cobra.Command{
 	Short: "Launch RESTful API",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-
 		// Loading configuration file
 		configStruct, err := config.LoadAPI(cfgFile)
 		if err != nil {
@@ -36,8 +34,7 @@ var apiServer = &cobra.Command{
 		// Set application log level
 		visibility.SetLoggingLevel(configStruct.LogLevel)
 
-		storage, err := elasticsearch.NewStorageManager(configStruct.Storage.ElasticSearch)
-
+		storage, err := meilisearch.NewStorageManager(configStruct.Storage.ElasticSearch)
 		if err != nil {
 			os.Exit(1)
 		}
@@ -51,13 +48,11 @@ var apiServer = &cobra.Command{
 
 		<-stop // block until we are requested to stop
 		apiStopper()
-
 	},
 }
 
 // init will add aws command
 func init() {
-
-	apiServer.PersistentFlags().IntVar(&port, "port", 8081, "lisinning port")
+	apiServer.PersistentFlags().IntVar(&port, "port", 8089, "lisinning port")
 	rootCmd.AddCommand(apiServer)
 }

@@ -4,9 +4,9 @@ log_level: info
 storage:
   elasticsearch:
     username: ""
-    password: ""
+    password: "BiJ_2XF_iQ00yrh2Jy_wXkNHWDjUxw4OX2fmtxg-NFk"  # Updated to match the Meilisearch master key
     endpoints: 
-      - http://127.0.0.1:9200
+      - http://meilisearch:7700  # Using Meilisearch endpoint
 smtp:
     username: "justinjoseph@qburst.com"
     password: "gxip gpyj dcvc rdme"

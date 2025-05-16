@@ -5,6 +5,7 @@ pkg/
 config_test.yaml
 cov.txt
 .vscode
+.cursorrules
 
 # Golang
 # Binaries for programs and plugins
