@@ -29,7 +29,7 @@ type StorageManager struct {
 }
 
 // NewStorageManager creates new Meilisearch storage
-func NewStorageManager(conf config.ElasticsearchConfig) (*StorageManager, error) {
+func NewStorageManager(conf config.MeilisearchConfig) (*StorageManager, error) {
 	client, err := NewClient(conf)
 	if err != nil {
 		return nil, err

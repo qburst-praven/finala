@@ -34,7 +34,7 @@ var apiServer = &cobra.Command{
 		// Set application log level
 		visibility.SetLoggingLevel(configStruct.LogLevel)
 
-		storage, err := meilisearch.NewStorageManager(configStruct.Storage.ElasticSearch)
+		storage, err := meilisearch.NewStorageManager(configStruct.Storage.Meilisearch)
 		if err != nil {
 			os.Exit(1)
 		}
