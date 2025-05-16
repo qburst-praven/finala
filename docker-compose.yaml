@@ -6,7 +6,7 @@ services:
       ports:
         - "7700:7700"
       environment:
-        - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-BiJ_2XF_iQ00yrh2Jy_wXkNHWDjUxw4OX2fmtxg-NFk}
+        - MEILI_MASTER_KEY=${MEILI_MASTER_KEY:-BiJ_2XF_iQ00yrh2Jy_ThisIsADummyPassword-NFk}
       volumes:
         - meilisearch_data:/meili_data
       networks:
@@ -48,7 +48,7 @@ services:
         - --port=8081
       environment:
         - OVERRIDE_STORAGE_ENDPOINT=http://meilisearch:7700
-        - OVERRIDE_STORAGE_PASSWORD=${MEILI_MASTER_KEY:-BiJ_2XF_iQ00yrh2Jy_wXkNHWDjUxw4OX2fmtxg-NFk}
+        - OVERRIDE_STORAGE_PASSWORD=${MEILI_MASTER_KEY:-BiJ_2XF_iQ00yrh2Jy_ThisIsADummyPassword-NFk}
       volumes:
           - ./configuration/api.yaml:/etc/finala/config.yaml
       ports:

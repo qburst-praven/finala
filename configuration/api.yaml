@@ -4,7 +4,7 @@ log_level: info
 storage:
   meilisearch:
     username: ""
-    password: "BiJ_2XF_iQ00yrh2Jy_wXkNHWDjUxw4OX2fmtxg-NFk"  # Meilisearch master key
+    password: "BiJ_2XF_iQ00yrh2Jy_ThisIsADummyPassword-NFk"  # Meilisearch master key
     endpoints: 
       - http://meilisearch:7700  # Meilisearch endpoint
 smtp:

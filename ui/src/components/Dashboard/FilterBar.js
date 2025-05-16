@@ -4,36 +4,75 @@ import PropTypes from "prop-types";
 import { setHistory, getHistory } from "../../utils/History";
 import { TagsService } from "services/tags.service";
 import { makeStyles } from "@material-ui/core/styles";
-import { Box, Chip, TextField } from "@material-ui/core";
+import { Box, Chip, TextField, Paper, Typography } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { titleDirective } from "utils/Title";
+import FilterListIcon from '@material-ui/icons/FilterList';
 
 let fetchTagsTimeout;
 let debounceTimeout;
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+  filterContainer: {
+    padding: theme.spacing(2),
+    marginBottom: theme.spacing(3),
+    borderRadius: theme.shape.borderRadius,
+    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+    backgroundColor: theme.palette.background.paper,
+  },
+  filterHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: theme.spacing(2),
+  },
+  filterIcon: {
+    marginRight: theme.spacing(1),
+    color: theme.palette.primary.main,
+  },
+  filterTitle: {
+    color: theme.palette.text.primary,
+    fontWeight: 600,
+    flexGrow: 1,
+  },
   Autocomplete: {
     width: "100%",
   },
   filterInput: {
-    borderColor: "#c1c1c1",
-    backgroundColor: "white",
-    "&:hover": {
-      borderColor: "red",
-      borderWidth: 2,
+    backgroundColor: theme.palette.background.default,
+    '& .MuiOutlinedInput-root': {
+      '&:hover fieldset': {
+        borderColor: theme.palette.primary.main,
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: theme.palette.primary.main,
+      },
     },
   },
   chips: {
-    fontWeight: "bold",
-    fontFamily: "Arial !important",
-    margin: "5px",
-    borderRadius: "3px",
-    backgroundColor: "#d5dee6",
-    fontSize: "14px",
+    margin: theme.spacing(0.5),
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: theme.palette.primary.light,
+    color: theme.palette.primary.contrastText,
+    fontWeight: 500,
+    fontSize: '0.875rem',
+    '&:hover': {
+      backgroundColor: theme.palette.primary.main,
+    },
+    '& .MuiChip-deleteIcon': {
+      color: 'inherit',
+      '&:hover': {
+        color: theme.palette.error.main,
+      },
+    },
   },
   valueAutoComplete: {
     visibility: "visible",
     marginTop: "-60px",
     zIndex: "-1",
+  },
+  chipLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0.5, 0),
   },
 }));
 
@@ -339,50 +378,68 @@ const FilterBar = ({
   }, [isScanning]);
 
   return (
-    <Fragment>
-      <Box mb={2}>
-        <Autocomplete
-          multiple
-          value={filters}
-          openOnFocus={true}
-          className={classes.Autocomplete}
-          onChange={optionChanged}
-          onClose={onValueClosed}
-          freeSolo
-          options={options}
-          getOptionLabel={(option) => option.title}
-          getOptionSelected={() => false}
-          renderTags={(value) =>
-            value.map((option) => (
-              <Fragment key={option.title}>
-                {option.type === "tag:incomplete" && (
-                  <span key={option.title}>{option.title}</span>
-                )}
-                {option.type !== "tag:incomplete" && (
-                  <Chip
-                    className={classes.chips}
-                    ma={2}
-                    label={option.title}
-                    key={option.title}
-                    onDelete={() => deleteFilter(option)}
-                  />
-                )}
-              </Fragment>
-            ))
-          }
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              className={classes.filterInput}
-              inputRef={inputRef}
-              variant="outlined"
-              label="Add Filter"
-              placeholder="Add Filter"
-            />
-          )}
-        />
+    <Paper className={classes.filterContainer} elevation={0}>
+      <Box className={classes.filterHeader}>
+        <FilterListIcon className={classes.filterIcon} />
+        <Typography variant="h6" className={classes.filterTitle}>
+          Filters
+        </Typography>
       </Box>
-    </Fragment>
+      <Autocomplete
+        multiple
+        id="tags-filled"
+        options={options}
+        freeSolo
+        className={classes.Autocomplete}
+        value={filters}
+        getOptionLabel={(option) =>
+          typeof option === "string" ? option : option.title
+        }
+        onChange={optionChanged}
+        onClose={onValueClosed}
+        renderTags={(value, getTagProps) =>
+          value.map((option, index) => (
+            <Chip
+              key={index}
+              label={
+                <Box className={classes.chipLabel}>
+                  {option.title}
+                </Box>
+              }
+              {...getTagProps({ index })}
+              onDelete={() => deleteFilter(option)}
+              className={classes.chips}
+            />
+          ))
+        }
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            placeholder="Add filter"
+            className={classes.filterInput}
+            inputRef={inputRef}
+          />
+        )}
+      />
+      {isShowValueAutoComplete && (
+        <Box pt={1} className={classes.valueAutoComplete}>
+          <Autocomplete
+            autoComplete
+            autoHighlight
+            id="tags-values-filled"
+            options={options}
+            getOptionLabel={(option) =>
+              typeof option === "string" ? option : option.title
+            }
+            renderInput={(params) => (
+              <TextField {...params} variant="outlined" />
+            )}
+            onChange={onValueSelect}
+          />
+        </Box>
+      )}
+    </Paper>
   );
 };
 
