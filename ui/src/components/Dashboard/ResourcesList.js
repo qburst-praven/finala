@@ -33,7 +33,28 @@ const useStyles = makeStyles(() => ({
 const ResourcesList = ({ resources, filters, addFilter, setResource }) => {
   const classes = useStyles();
   const resourcesList = Object.values(resources)
-    .sort((a, b) => (a.TotalSpent > b.TotalSpent ? -1 : 1))
+    .sort((a, b) => {
+      // Primary sort: TotalSpent descending
+      if (a.TotalSpent > b.TotalSpent) {
+        return -1;
+      }
+      if (a.TotalSpent < b.TotalSpent) {
+        return 1;
+      }
+
+      // Secondary sort: ResourceCount descending
+      // Ensure ResourceCount exists, default to 0 if not
+      const countA = a.ResourceCount || 0;
+      const countB = b.ResourceCount || 0;
+      if (countA > countB) {
+        return -1;
+      }
+      if (countA < countB) {
+        return 1;
+      }
+
+      return 0;
+    })
     .map((resource) => {
       const title = titleDirective(resource.ResourceName);
       const amount = MoneyDirective(resource.TotalSpent);

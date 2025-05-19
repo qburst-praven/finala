@@ -5,5 +5,5 @@ import numeral from "numeral";
  * @returns formatted money with currency sign
  */
 export const MoneyDirective = (amount) => {
-  return numeral(amount).format("$ 0,0[.]00");
+  return numeral(amount).format("$0,0[.]00");
 };
