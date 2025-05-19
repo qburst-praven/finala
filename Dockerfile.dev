@@ -1,4 +1,4 @@
-FROM golang:1.13-alpine AS build_finala
+FROM golang:1.22-alpine AS build_finala
 
 RUN apk add --update alpine-sdk git make && \
 	git config --global http.https://gopkg.in.followRedirects true 

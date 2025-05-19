@@ -6,7 +6,7 @@ import (
 	"finala/api"
 	"finala/api/storage"
 	"finala/api/testutils"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -39,7 +39,7 @@ func TestInvalidRoue(t *testing.T) {
 	if rr.Code != http.StatusNotFound {
 		t.Fatalf("handler returned wrong status code: got %v want %v", rr.Code, http.StatusOK)
 	}
-	body, err := ioutil.ReadAll(rr.Body)
+	body, err := io.ReadAll(rr.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -67,7 +67,7 @@ func TestHealthRequest(t *testing.T) {
 	if rr.Code != http.StatusOK {
 		t.Fatalf("handler returned wrong status code: got %v want %v", rr.Code, http.StatusOK)
 	}
-	body, err := ioutil.ReadAll(rr.Body)
+	body, err := io.ReadAll(rr.Body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -112,7 +112,7 @@ func TestGetSummary(t *testing.T) {
 			}
 
 			if test.expectedStatusCode == http.StatusOK {
-				body, err := ioutil.ReadAll(rr.Body)
+				body, err := io.ReadAll(rr.Body)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -167,7 +167,7 @@ func TestGetResourcesData(t *testing.T) {
 
 			if test.expectedStatusCode == http.StatusOK {
 
-				body, err := ioutil.ReadAll(rr.Body)
+				body, err := io.ReadAll(rr.Body)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -218,7 +218,7 @@ func TestGetExecutions(t *testing.T) {
 				t.Fatalf("handler returned wrong status code: got %v want %v", rr.Code, http.StatusOK)
 			}
 
-			body, err := ioutil.ReadAll(rr.Body)
+			body, err := io.ReadAll(rr.Body)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -320,7 +320,7 @@ func TestGetExecutionTags(t *testing.T) {
 				t.Fatalf("handler returned wrong status code: got %v want %v", rr.Code, http.StatusOK)
 			}
 			if test.expectedStatusCode == http.StatusOK {
-				body, err := ioutil.ReadAll(rr.Body)
+				body, err := io.ReadAll(rr.Body)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -376,7 +376,7 @@ func TestGetResourceTrends(t *testing.T) {
 
 			if test.expectedStatusCode == http.StatusOK {
 
-				body, err := ioutil.ReadAll(rr.Body)
+				body, err := io.ReadAll(rr.Body)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -431,7 +431,7 @@ func TestVersion(t *testing.T) {
 				t.Fatalf("handler returned wrong status code: got %v want %v", rr.Code, http.StatusOK)
 			}
 			if test.expectedStatusCode == http.StatusOK {
-				body, err := ioutil.ReadAll(rr.Body)
+				body, err := io.ReadAll(rr.Body)
 				if err != nil {
 					t.Fatal(err)
 				}

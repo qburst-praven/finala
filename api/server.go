@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/gorilla/handlers"
-	"github.com/gorilla/mux"
 
 	log "github.com/sirupsen/logrus"
 
@@ -24,7 +23,7 @@ const (
 
 // Server is the API server struct
 type Server struct {
-	router     *mux.Router
+	router     *http.ServeMux
 	httpserver *http.Server
 	storage    storage.StorageDescriber
 	version    version.VersionManagerDescriptor
@@ -33,7 +32,7 @@ type Server struct {
 // NewServer returns a new Server
 func NewServer(port int, storage storage.StorageDescriber, version version.VersionManagerDescriptor) *Server {
 
-	router := mux.NewRouter()
+	router := http.NewServeMux()
 	corsObj := handlers.AllowedOrigins([]string{"*"})
 	return &Server{
 		router:  router,
@@ -78,22 +77,23 @@ func (server *Server) Serve() serverutil.StopFunc {
 
 // BindEndpoints sets up the router to handle API endpoints
 func (server *Server) BindEndpoints() {
-
-	server.router.HandleFunc("/api/v1/summary/{executionID}", server.GetSummary).Methods("GET")
-	server.router.HandleFunc("/api/v1/executions", server.GetExecutions).Methods("GET")
-	server.router.HandleFunc("/api/v1/resources/{type}", server.GetResourceData).Methods("GET")
-	server.router.HandleFunc("/api/v1/trends/{type}", server.GetResourceTrends).Methods("GET")
-	server.router.HandleFunc("/api/v1/tags/{executionID}", server.GetExecutionTags).Methods("GET")
-	server.router.HandleFunc("/api/v1/detect-events/{executionID}", server.DetectEvents).Methods("POST")
-	server.router.HandleFunc("/api/v1/send-report", server.SendReport).Methods("POST")
-	server.router.HandleFunc("/api/v1/version", server.VersionHandler).Methods("GET")
-	server.router.HandleFunc("/api/v1/health", server.HealthCheckHandler).Methods("GET")
-	server.router.NotFoundHandler = http.HandlerFunc(server.NotFoundRoute)
-
+	// Add pattern handlers using Go 1.22's ServeMux
+	server.router.HandleFunc("GET /api/v1/summary/{executionID}", server.GetSummary)
+	server.router.HandleFunc("GET /api/v1/executions", server.GetExecutions)
+	server.router.HandleFunc("GET /api/v1/resources/{type}", server.GetResourceData)
+	server.router.HandleFunc("GET /api/v1/trends/{type}", server.GetResourceTrends)
+	server.router.HandleFunc("GET /api/v1/tags/{executionID}", server.GetExecutionTags)
+	server.router.HandleFunc("POST /api/v1/detect-events/{executionID}", server.DetectEvents)
+	server.router.HandleFunc("POST /api/v1/send-report", server.SendReport)
+	server.router.HandleFunc("GET /api/v1/version", server.VersionHandler)
+	server.router.HandleFunc("GET /api/v1/health", server.HealthCheckHandler)
+	
+	// Add a catch-all handler for not found routes
+	server.router.HandleFunc("/", server.NotFoundRoute)
 }
 
-// Router returns the Gorilla Mux HTTP router defined for this server
-func (server *Server) Router() *mux.Router {
+// Router returns the Go ServeMux HTTP router defined for this server
+func (server *Server) Router() *http.ServeMux {
 	return server.router
 }
 
