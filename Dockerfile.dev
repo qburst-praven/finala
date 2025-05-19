@@ -11,7 +11,7 @@ RUN make build-linux && \
 	mv /app/finala_linux /app/finala
 
 
-FROM node:12.16-alpine AS build_ui
+FROM node:18-alpine AS build_ui
 
 RUN apk add --update alpine-sdk make 
 

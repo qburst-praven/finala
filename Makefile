@@ -22,7 +22,7 @@ build: build-ui ## Download dependecies and Build the default binary
 		$(GOBUILD) -o $(BINARY_NAME) -v
 
 build-ui: ## Build applicaiton UI
-		cd ui && npm install && npm run build && cd ..
+		cd ui && npm install --legacy-peer-deps && npm run build && cd ..
 
 test: ## Run tests for the project
 		$(TEST_EXEC_CMD)
