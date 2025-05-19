@@ -86,44 +86,131 @@ func (sm *StorageManager) Save(data string) bool {
 
 // GetSummary returns executions summary
 func (sm *StorageManager) GetSummary(executionID string, filters map[string]string) (map[string]storage.CollectorsSummary, error) {
-	summary := map[string]storage.CollectorsSummary{}
+	summary := make(map[string]storage.CollectorsSummary)
 
-	searchParams := map[string]interface{}{
-		"q": "",
+	// 1. Fetch and process service_status events for status and error messages
+	serviceStatusEvents, err := sm.client.Search(sm.currentIndexDay, map[string]interface{}{
+		"q":         "",
 		"filter_by": fmt.Sprintf("EventType=service_status AND ExecutionID=%s", executionID),
-	}
-
-	result, err := sm.client.Search(sm.currentIndexDay, searchParams)
+		// Potentially add limit if there can be many status events per service, though unlikely for summary.
+		// Default MeiliSearch limit is 20, might need to be higher if many resource types.
+		// For now, assuming default limit is sufficient or all relevant statuses are captured.
+	})
 	if err != nil {
-		log.WithError(err).Error("error when trying to get summary data")
-		return summary, err
+		log.WithError(err).Error("error when trying to get service_status summary data")
+		// Decide if we should return partial data or error out. For now, continue to try fetching resource data.
 	}
 
-	for _, hit := range result.Hits {
-		var summaryData storage.Summary
-		hitData, err := json.Marshal(hit)
-		if err != nil {
-			log.Error("could not marshal document")
-			continue
-		}
-		if err := json.Unmarshal(hitData, &summaryData); err != nil {
-			log.Error("could not parse summary row")
-			continue
-		}
-
-		val, found := summary[summaryData.ResourceName]
-		if found {
-			if summaryData.EventTime < val.EventTime {
+	if serviceStatusEvents != nil {
+		for _, hit := range serviceStatusEvents.Hits {
+			var statusData storage.Summary // storage.Summary is from api/storage/structs.go
+			hitData, err := json.Marshal(hit)
+			if err != nil {
+				log.WithError(err).Error("could not marshal service_status hit")
 				continue
 			}
-			delete(summary, summaryData.ResourceName)
-		}
+			if err := json.Unmarshal(hitData, &statusData); err != nil {
+				log.WithError(err).Error("could not parse service_status row")
+				continue
+			}
 
-		summary[summaryData.ResourceName] = storage.CollectorsSummary{
-			EventTime:    summaryData.EventTime,
-			Status:       summaryData.Data.Status,
-			ResourceName: summaryData.ResourceName,
-			ErrorMessage: summaryData.Data.ErrorMessage,
+			// Ensure we only keep the latest status event if multiple exist (though GetSummary implies one summary)
+			existing, found := summary[statusData.ResourceName]
+			if found && statusData.EventTime < existing.EventTime {
+				continue
+			}
+
+			summary[statusData.ResourceName] = storage.CollectorsSummary{
+				ResourceName: statusData.ResourceName,
+				Status:       statusData.Data.Status,
+				ErrorMessage: statusData.Data.ErrorMessage,
+				EventTime:    statusData.EventTime,
+				// ResourceCount and TotalSpent will be populated from resource_detected events
+			}
+		}
+	}
+
+	// 2. Fetch and process resource_detected events for costs and counts
+	resourceDetectedEvents, err := sm.client.Search(sm.currentIndexDay, map[string]interface{}{
+		"q":         "",
+		"filter_by": fmt.Sprintf("EventType=resource_detected AND ExecutionID=%s", executionID),
+		"limit":     1000, // Assuming up to 1000 resources per execution for summary. Adjust if necessary.
+	})
+
+	if err != nil {
+		log.WithError(err).Error("error when trying to get resource_detected summary data")
+		// If we can't get resource data, the summary will be incomplete (costs will be 0).
+		// Return the summary populated so far (with statuses) or error out.
+		// For now, return what we have, which might be just statuses.
+		return summary, err // Or, if statuses are primary, return summary, nil
+	}
+
+	if resourceDetectedEvents != nil {
+		for _, hit := range resourceDetectedEvents.Hits {
+			var eventDataMap map[string]interface{}
+			hitData, err := json.Marshal(hit)
+			if err != nil {
+				log.WithError(err).Error("could not marshal resource_detected hit")
+				continue
+			}
+			if err := json.Unmarshal(hitData, &eventDataMap); err != nil {
+				log.WithError(err).Error("could not unmarshal resource_detected hit to map")
+				continue
+			}
+
+			resourceName, rnOK := eventDataMap["ResourceName"].(string)
+			if !rnOK {
+				log.Error("ResourceName missing or not a string in resource_detected event")
+				continue
+			}
+
+			dataField, dataOK := eventDataMap["Data"].(map[string]interface{})
+			if !dataOK {
+				log.WithField("resourceName", resourceName).Error("Data field missing or not a map in resource_detected event")
+				continue
+			}
+
+			// PriceDetectedFields are embedded, so PricePerMonth should be a top-level field in Data
+			pricePerMonth, ppmOK := dataField["PricePerMonth"].(float64)
+			if !ppmOK {
+				// Some resources like Lambda might not have PricePerMonth directly.
+				// Handle this gracefully, e.g. by attempting to get PricePerHour or setting to 0.
+				// For now, we log and skip if PricePerMonth is not found or not a float64.
+				// This might be an area for improvement based on how various resources report costs.
+				log.WithFields(log.Fields{
+					"resourceName": resourceName,
+					"dataField":    dataField,
+				}).Warn("PricePerMonth not found or not a float64 in resource_detected event Data")
+				// Continue accumulating other data, or decide if this resource should have a $0 cost.
+			}
+
+			currentSummary := summary[resourceName] // Get existing summary (could be just status info)
+			currentSummary.ResourceName = resourceName // Ensure ResourceName is set
+			currentSummary.ResourceCount++
+			currentSummary.TotalSpent += pricePerMonth
+			// Status, ErrorMessage, EventTime are already set from service_status or will be default if no status event.
+
+			summary[resourceName] = currentSummary
+		}
+	}
+
+	// Fill in any missing ResourceNames for services that had detected resources but no explicit status event
+	// (though typically a CollectStart/Finish should exist)
+	if resourceDetectedEvents != nil {
+		for _, hit := range resourceDetectedEvents.Hits {
+				var eventDataMap map[string]interface{}
+				hitData, err := json.Marshal(hit)
+				if err != nil {continue}
+				if err := json.Unmarshal(hitData, &eventDataMap); err != nil {continue}
+				resourceName, rnOK := eventDataMap["ResourceName"].(string)
+				if !rnOK {continue}
+
+				if _, exists := summary[resourceName]; !exists {
+						summary[resourceName] = storage.CollectorsSummary{
+								ResourceName: resourceName,
+								// Status, ErrorMessage, EventTime will be zero/empty if no corresponding service_status event
+						}
+				}
 		}
 	}
 

@@ -2,107 +2,52 @@ import React, { Fragment, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import EmailIcon from "@material-ui/icons/Email";
-import GetAppIcon from "@material-ui/icons/GetApp";
-import ViewColumnIcon from "@material-ui/icons/ViewColumn";
-import FilterListIcon from "@material-ui/icons/FilterList";
 import { makeStyles } from "@material-ui/core/styles";
+import Modal from "@material-ui/core/Modal";
+import Alert from "@material-ui/lab/Alert";
+import Snackbar from "@material-ui/core/Snackbar";
 import {
-  Modal,
-  Backdrop,
-  Fade,
-  Paper,
-  Typography,
   FormControl,
   FormLabel,
   TextField,
   Button,
   Hidden,
-  Snackbar,
-  Box,
-  IconButton,
-  Tooltip,
-  Divider,
 } from "@material-ui/core";
-import Alert from "@material-ui/lab/Alert";
 import { http } from "../../services/request.service";
-import CloseIcon from "@material-ui/icons/Close";
 
+function rand() {
+  return Math.round(Math.random() * 20) - 10;
+}
+function getModalStyle() {
+  const top = 50;
+  const left = 50;
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+    border: `none`,
+  };
+}
 const useStyles = makeStyles((theme) => ({
-  modalPaper: {
+  paper: {
     position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 450,
+    width: 400,
     backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
     boxShadow: theme.shadows[5],
-    padding: 0,
-    outline: "none",
-    borderRadius: theme.shape.borderRadius,
-    overflow: "hidden",
-  },
-  modalHeader: {
-    padding: theme.spacing(2, 3),
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  modalContent: {
-    padding: theme.spacing(3),
-  },
-  modalFooter: {
-    padding: theme.spacing(2),
-    borderTop: `1px solid ${theme.palette.divider}`,
-    display: "flex",
-    justifyContent: "flex-end",
-  },
-  formNote: {
-    marginBottom: theme.spacing(2),
-    fontSize: "0.875rem",
-    color: theme.palette.text.secondary,
-  },
-  formLabel: {
-    marginBottom: theme.spacing(1),
-    color: theme.palette.text.primary,
-    fontWeight: 500,
-  },
-  toolbarButton: {
-    color: theme.palette.primary.main,
-    margin: theme.spacing(0, 0.5),
-    padding: theme.spacing(1),
-    '&:hover': {
-      backgroundColor: 'rgba(0, 123, 255, 0.08)',
-    },
-  },
-  closeButton: {
-    color: theme.palette.primary.contrastText,
-  },
-  buttonProgress: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    marginTop: -12,
-    marginLeft: -12,
-  },
-  buttonWrapper: {
-    position: 'relative',
-  },
-  toolbarContainer: {
-    display: 'flex',
-    alignItems: 'center',
+    padding: theme.spacing(2, 4, 3),
   },
 }));
-
 const CustomToolbar = (props, getFlits) => {
+  console.log("BASE URL", http.baseURL);
   const classes = useStyles();
+  // getModalStyle is not a pure function, we roll the style only on the first render
+  const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
   const [openSnackSuccess, setOpenSnackSuccess] = useState(false);
   const [openSnackError, setOpenSnackError] = useState(false);
   const [executionId, setExecutionId] = useState(null);
   const [disabledBtn, setDisabledBtn] = useState(false);
-  
   useEffect(() => {
     var url = window.location.search;
     url = url
@@ -112,7 +57,7 @@ const CustomToolbar = (props, getFlits) => {
       .reduce((values, [key, value]) => {
         values[key] = value;
         return values;
-      }, {});
+      }, {}); // remove the ?
     setFormData({
       ...formData,
       executionID: url.executionId,
@@ -120,13 +65,11 @@ const CustomToolbar = (props, getFlits) => {
       filters: props.getFlits,
     });
   }, []);
-  
   const setCookie = (name, value, days) => {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
     document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
   };
-  
   const getCookie = (name) => {
     const cookieName = `${name}=`;
     const decodedCookie = decodeURIComponent(document.cookie);
@@ -140,32 +83,33 @@ const CustomToolbar = (props, getFlits) => {
       }
     }
   };
-  
   const deleteCookie = (name) => {
     document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;`;
   };
-  
   const handleStackClose = () => {
     setOpenSnackError(false);
     setOpenSnackSuccess(false);
   };
-  
   const handleClick = () => {
+    console.log("clicked on icon!");
+    console.log(getCookie("toEmails"));
     setOpen(true);
     if (getCookie("toEmails")) {
+      //if cookie set then auto filled in form
       setFormData({ ...formData, toEmails: getCookie("toEmails") });
     }
   };
-  
+  const handleOpen = () => {
+    setOpen(true);
+  };
   const handleClose = () => {
     setOpen(false);
   };
-  
   const [formData, setFormData] = useState({
+    // Initialize your form fields here
     toEmails: null,
     columns: props.getCols,
   });
-  
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData({
@@ -173,31 +117,30 @@ const CustomToolbar = (props, getFlits) => {
       [name]: value,
     });
   };
-  
   const handleSubmit = async (event) => {
     setDisabledBtn(true);
     deleteCookie("toEmails");
     event.preventDefault();
     formData.filters = props.getFlits;
     formData.search = props.getSearchText;
-    setCookie("toEmails", formData.toEmails, 7);
-    
+    setCookie("toEmails", formData.toEmails, 7); // Sets a cookie named 'cookieName' with value 'cookieValue' that expires in 7 days
+    // const fullUrl = `http://127.0.0.1:8081/api/v1/send-report`;
     const fullUrl = `${http.baseURL}/api/v1/send-report`;
     try {
       fetch(fullUrl, {
-        method: "POST",
-        body: JSON.stringify(formData),
+        method: "POST", // Specify the HTTP method
+        body: JSON.stringify(formData), // Collect form data
       })
-        .then((response) => response.json())
+        .then((response) => response.json()) // Read response as text
         .then((data) => {
           setDisabledBtn(false);
           if (data.status === 200) {
             setOpenSnackError(false);
             setOpenSnackSuccess(true);
-            setOpen(false);
             setTimeout(() => {
               setOpenSnackSuccess(false);
             }, 6000);
+            //reset form
             setFormData({
               ...formData,
               toEmails: "",
@@ -209,7 +152,7 @@ const CustomToolbar = (props, getFlits) => {
               setOpenSnackError(false);
             }, 6000);
           }
-        });
+        }); // Alert the response
     } catch (error) {
       setDisabledBtn(false);
       setOpenSnackError(true);
@@ -219,112 +162,73 @@ const CustomToolbar = (props, getFlits) => {
       }, 6000);
     }
   };
-  
   return (
-    <div className={classes.toolbarContainer}>
-      <Tooltip title="Email Report">
-        <IconButton className={classes.toolbarButton} onClick={handleClick}>
+    <Fragment>
+      <span onClick={handleClick}>
+        <button className="MuiButtonBase-root MuiIconButton-root jss430">
           <EmailIcon />
-        </IconButton>
-      </Tooltip>
-      
+        </button>
+      </span>
       <Modal
         open={open}
         onClose={handleClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
       >
-        <Fade in={open}>
-          <Paper className={classes.modalPaper}>
-            <Box className={classes.modalHeader}>
-              <Typography variant="h6">Email Report</Typography>
-              <IconButton className={classes.closeButton} size="small" onClick={handleClose}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            
-            <Box className={classes.modalContent}>
-              <Typography variant="body2" className={classes.formNote}>
-                You can enter multiple email addresses separated by commas.
-              </Typography>
-              
-              <form onSubmit={handleSubmit}>
-                <FormControl fullWidth>
-                  <Typography variant="subtitle2" className={classes.formLabel}>
-                    Email Addresses
-                  </Typography>
-                  <TextField
-                    name="toEmails"
-                    required
-                    size="medium"
-                    color="primary"
-                    placeholder="example@domain.com, another@domain.com"
-                    onChange={handleInputChange}
-                    variant="outlined"
-                    fullWidth
-                    value={formData.toEmails || ""}
-                    multiline
-                    rows={3}
-                  />
-                  <input
-                    type="hidden"
-                    value={formData.executionID}
-                    name="executionID"
-                    onChange={handleInputChange}
-                  />
-                </FormControl>
-              </form>
-            </Box>
-            
-            <Box className={classes.modalFooter}>
-              <Button 
-                color="primary" 
-                onClick={handleClose}
-                style={{ marginRight: 8 }}
-              >
-                Cancel
-              </Button>
+        <div style={modalStyle} className={classes.paper}>
+          <h2 id="simple-modal-title">Report Send To</h2>
+          <hr />
+          {/* {"GET FLITES object :-" + JSON.stringify(props.getFlits, null, 2)} */}
+          {/* {"GET cols array:-" + JSON.stringify(props.getCols, null, 2)} */}
+          <form onSubmit={handleSubmit}>
+            <FormControl>
+              <h4>Note:You can pass multiple email by comma separated.</h4>
+              <FormLabel>Enter Email:</FormLabel>
+              <TextField
+                name="toEmails"
+                required="true"
+                size="medium"
+                color="primary"
+                placeholder="abc@gmail.com,xyz@gmail.com"
+                onChange={handleInputChange}
+                variant="outlined"
+                fullWidth
+                margin="normal"
+                value={formData.toEmails}
+                multiline={true}
+                rows={3}
+              ></TextField>
+              <input
+                type="hidden"
+                value={formData.executionID}
+                name="executionID"
+                onChange={handleInputChange}
+              ></input>
               <Button
                 color="primary"
                 variant="contained"
-                onClick={handleSubmit}
+                type="submit"
                 disabled={disabledBtn}
               >
-                Send Report
+                Submit
               </Button>
-            </Box>
-          </Paper>
-        </Fade>
+            </FormControl>
+          </form>
+        </div>
       </Modal>
-      
-      <Snackbar 
-        open={openSnackSuccess} 
-        autoHideDuration={6000} 
-        onClose={handleStackClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={handleStackClose} severity="success" variant="filled">
-          Report will be sent to the specified email addresses shortly.
+      <Snackbar open={openSnackSuccess} autoHideDuration={600}>
+        <Alert onClose={handleStackClose} severity="success">
+          Success! Report will send on entered email id(s) soon.
         </Alert>
       </Snackbar>
-      
-      <Snackbar 
-        open={openSnackError} 
-        autoHideDuration={6000} 
-        onClose={handleStackClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={handleStackClose} severity="error" variant="filled">
-          Something went wrong. Please try again.
+      <Snackbar open={openSnackError} autoHideDuration={600}>
+        <Alert onClose={handleStackClose} severity="error">
+          Something went wrong! Please try again.
         </Alert>
       </Snackbar>
-    </div>
+    </Fragment>
   );
 };
-
 CustomToolbar.propTypes = {
   dbFilter: PropTypes.object,
   getFlits: PropTypes.object,
