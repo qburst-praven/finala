@@ -1,12 +1,8 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
-import {
-  makeStyles,
-  Box,
-  Card,
-  CardContent,
-  LinearProgress,
-} from "@material-ui/core";
+import { Box, Card, CardContent, LinearProgress } from "@mui/material";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 import Logo from "./Logo";
 

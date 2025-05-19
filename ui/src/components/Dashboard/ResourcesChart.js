@@ -7,14 +7,9 @@ import { titleDirective } from "../../utils/Title";
 import { MoneyDirective } from "../../utils/Money";
 import { setHistory } from "../../utils/History";
 
-import {
-  Box,
-  Card,
-  CardContent,
-  LinearProgress,
-  makeStyles,
-} from "@material-ui/core";
-import ReportProblemIcon from "@material-ui/icons/ReportProblem";
+import { Box, Card, CardContent, LinearProgress } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 
 const useStyles = makeStyles(() => ({
   noDataTitle: {

@@ -8,7 +8,9 @@ import NotFound from "../components/NotFound";
 import NoData from "../components/NoData";
 import DataFactory from "../components/DataFactory";
 
-import { CssBaseline, makeStyles, Box } from "@material-ui/core";
+import { CssBaseline, Box } from "@mui/material";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles(() => ({
   root: {

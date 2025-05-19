@@ -2,10 +2,10 @@ import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import colors from "./colors.json";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import { setHistory } from "../../utils/History";
 
-import { Box, Chip } from "@material-ui/core";
+import { Box, Chip } from "@mui/material";
 import { titleDirective } from "../../utils/Title";
 import { MoneyDirective } from "../../utils/Money";
 

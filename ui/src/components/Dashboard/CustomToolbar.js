@@ -1,18 +1,18 @@
 import React, { Fragment, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import EmailIcon from "@material-ui/icons/Email";
-import { makeStyles } from "@material-ui/core/styles";
-import Modal from "@material-ui/core/Modal";
-import Alert from "@material-ui/lab/Alert";
-import Snackbar from "@material-ui/core/Snackbar";
+import EmailIcon from "@mui/icons-material/Email";
+import makeStyles from "@mui/styles/makeStyles";
+import Modal from "@mui/material/Modal";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 import {
   FormControl,
   FormLabel,
   TextField,
   Button,
   Hidden,
-} from "@material-ui/core";
+} from "@mui/material";
 import { http } from "../../services/request.service";
 
 function rand() {

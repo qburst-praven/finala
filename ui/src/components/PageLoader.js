@@ -1,5 +1,7 @@
 import React from "react";
-import { Grid, CircularProgress, makeStyles } from "@material-ui/core";
+import { Grid, CircularProgress } from "@mui/material";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -16,7 +18,7 @@ const PageLoader = () => {
       spacing={0}
       direction="column"
       alignItems="center"
-      justify="center"
+      justifyContent="center"
       className={classes.root}
     >
       <Grid item xs={10}>

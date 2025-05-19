@@ -5,17 +5,14 @@ import numeral from "numeral";
 import MUIDataTable from "mui-datatables";
 import TextUtils from "utils/Text";
 import TagsDialog from "../Dialog/Tags";
-import ReportProblemIcon from "@material-ui/icons/ReportProblem";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import { getHistory } from "../../utils/History";
 import { useTableFilters } from "../../Hooks/TableHooks";
 import CustomToolbar from "./CustomToolbar";
 
-import {
-  makeStyles,
-  Card,
-  CardContent,
-  LinearProgress,
-} from "@material-ui/core";
+import { Card, CardContent, LinearProgress } from "@mui/material";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 import Moment from "moment";
 

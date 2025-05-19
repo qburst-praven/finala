@@ -2,7 +2,9 @@ import React, { Fragment, useEffect } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { titleDirective } from "utils/Title";
-import { Box, LinearProgress, makeStyles } from "@material-ui/core";
+import { Box, LinearProgress } from "@mui/material";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles(() => ({
   progress: {

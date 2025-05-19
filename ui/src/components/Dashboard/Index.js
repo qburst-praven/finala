@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import { setHistory } from "../../utils/History";
 
 import PropTypes from "prop-types";
@@ -12,7 +12,7 @@ import ResourcesList from "./ResourcesList";
 import ResourceTable from "./ResourceTable";
 import ExecutionIndex from "../Executions/Index";
 import Logo from "../Logo";
-import { Grid, Box } from "@material-ui/core";
+import { Grid, Box } from "@mui/material";
 
 const useStyles = makeStyles(() => ({
   root: {

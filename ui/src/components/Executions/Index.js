@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { setHistory } from "../../utils/History";
 import { ucfirstDirective } from "../../utils/Title";
-import { Select, MenuItem } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Select, MenuItem } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles(() => ({
   selector: {

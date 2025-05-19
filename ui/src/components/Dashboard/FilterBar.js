@@ -3,9 +3,9 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { setHistory, getHistory } from "../../utils/History";
 import { TagsService } from "services/tags.service";
-import { makeStyles } from "@material-ui/core/styles";
-import { Box, Chip, TextField } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import makeStyles from "@mui/styles/makeStyles";
+import { Box, Chip, TextField } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import { titleDirective } from "utils/Title";
 
 let fetchTagsTimeout;
@@ -351,7 +351,7 @@ const FilterBar = ({
           freeSolo
           options={options}
           getOptionLabel={(option) => option.title}
-          getOptionSelected={() => false}
+          isOptionEqualToValue={() => false}
           renderTags={(value) =>
             value.map((option) => (
               <Fragment key={option.title}>
