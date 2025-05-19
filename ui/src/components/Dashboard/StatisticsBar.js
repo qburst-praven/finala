@@ -91,7 +91,15 @@ const StatisticsBar = ({
                       <LinearProgress className={classes.progress} />
                     )}
                     {!isResourceListLoading && (
-                      <Typography className={classes.unused}>
+                      <Typography
+                        variant="inherit"
+                        sx={{
+                          fontSize: "56px",
+                          color: "orangered",
+                          fontFamily: "MuseoModerno",
+                          minHeight: "63px",
+                        }}
+                      >
                         {MoneyDirective(TotalSpent)}
                       </Typography>
                     )}
@@ -106,7 +114,15 @@ const StatisticsBar = ({
                       <LinearProgress className={classes.progress} />
                     )}
                     {!isResourceListLoading && (
-                      <Typography className={classes.unused_daily}>
+                      <Typography
+                        variant="inherit"
+                        sx={{
+                          fontSize: "56px",
+                          color: "purple",
+                          fontFamily: "MuseoModerno",
+                          minHeight: "63px",
+                        }}
+                      >
                         {MoneyDirective(DailySpent)}
                       </Typography>
                     )}
@@ -119,7 +135,16 @@ const StatisticsBar = ({
                   <LinearProgress className={classes.progress} />
                 )}
                 {!isResourceListLoading && (
-                  <Typography className={classes.unused_resource}>
+                  <Typography
+                    variant="inherit"
+                    sx={{
+                      fontSize: "56px",
+                      color: "darkgreen",
+                      fontFamily: "Nunito",
+                      fontWeight: "400",
+                      minHeight: "63px",
+                    }}
+                  >
                     {titleDirective(HighestResourceName).toUpperCase()}
                   </Typography>
                 )}

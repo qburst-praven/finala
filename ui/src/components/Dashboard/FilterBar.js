@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import { setHistory, getHistory } from "../../utils/History";
 import { TagsService } from "services/tags.service";
 import makeStyles from "@mui/styles/makeStyles";
@@ -52,6 +53,7 @@ const FilterBar = ({
   setResource,
 }) => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const [tags, setTags] = useState({});
   const [options, setOptions] = useState([]);
   const [defaultOptions, setDefaultOptions] = useState([]);
@@ -94,7 +96,7 @@ const FilterBar = ({
    */
   const updateFilters = (filters) => {
     setFilters(filters);
-    setHistory({
+    setHistory(navigate, {
       filters: filters,
     });
   };

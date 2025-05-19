@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import makeStyles from "@mui/styles/makeStyles";
+import { useNavigate } from "react-router-dom";
 import { setHistory } from "../../utils/History";
 
 import PropTypes from "prop-types";
@@ -41,6 +42,7 @@ const DashboardIndex = ({
   filters,
 }) => {
   const classes = useStyles();
+  const navigate = useNavigate();
   /**
    * Will clear selected filter and show main page
    */
@@ -50,7 +52,7 @@ const DashboardIndex = ({
     );
     setResource(null);
     setFilters(updatedFilters);
-    setHistory({ filters: updatedFilters });
+    setHistory(navigate, { filters: updatedFilters });
   };
 
   return (

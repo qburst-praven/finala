@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import colors from "./colors.json";
 import makeStyles from "@mui/styles/makeStyles";
+import { useNavigate } from "react-router-dom";
 import { setHistory } from "../../utils/History";
 
 import { Box, Chip } from "@mui/material";
@@ -32,6 +33,7 @@ const useStyles = makeStyles(() => ({
  */
 const ResourcesList = ({ resources, filters, addFilter, setResource }) => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const resourcesList = Object.values(resources)
     .sort((a, b) => {
       // Primary sort: TotalSpent descending
@@ -77,7 +79,7 @@ const ResourcesList = ({ resources, filters, addFilter, setResource }) => {
     setResource(resource.ResourceName);
     addFilter(filter);
 
-    setHistory({
+    setHistory(navigate, {
       filters: filters,
     });
   };

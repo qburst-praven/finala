@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import Moment from "moment";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import { setHistory } from "../../utils/History";
 import { ucfirstDirective } from "../../utils/Title";
 import { Select, MenuItem } from "@mui/material";
@@ -35,6 +36,7 @@ const ExecutionsIndex = ({
   setCurrentExecution,
 }) => {
   const classes = useStyles();
+  const navigate = useNavigate();
 
   /**
    *
@@ -43,7 +45,7 @@ const ExecutionsIndex = ({
    */
   const updateCurrentExecution = (executionId) => {
     setCurrentExecution(executionId);
-    setHistory({ executionId });
+    setHistory(navigate, { executionId });
   };
 
   return (

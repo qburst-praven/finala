@@ -5,6 +5,7 @@ import colors from "./colors.json";
 import Chart from "react-apexcharts";
 import { titleDirective } from "../../utils/Title";
 import { MoneyDirective } from "../../utils/Money";
+import { useNavigate } from "react-router-dom";
 import { setHistory } from "../../utils/History";
 
 import { Box, Card, CardContent, LinearProgress } from "@mui/material";
@@ -42,6 +43,7 @@ const ResourcesChart = ({
   setResource,
 }) => {
   const classes = useStyles();
+  const navigate = useNavigate();
   const colorList = colors.map((color) => color.hex);
   const sortedResources = Object.values(resources)
     .filter((row) => row.TotalSpent > 0)
@@ -133,7 +135,7 @@ const ResourcesChart = ({
     setResource(resource.ResourceName);
     addFilter(filter);
 
-    setHistory({
+    setHistory(navigate, {
       filters: filters,
     });
   };

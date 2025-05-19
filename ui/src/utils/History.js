@@ -1,4 +1,4 @@
-import { history } from "configureStore";
+// import { history } from "configureStore"; // Remove
 
 const windowParams = new window.URLSearchParams(window.location.search);
 let savedFilters = windowParams.get("filters");
@@ -32,10 +32,16 @@ export const transformFilters = (filters) => {
 
 /**
  *
- * @param {filters, executionId} historyParams , filters: list of active filters, executionId: current selected execution (might be false for clearing property)
+ * @param {function} navigate - The navigate function from useNavigate() hook
+ * @param {object} historyParams - {filters, executionId}
  *  Will set State into url search params, will save the params so we can set only part of the params
  */
-export const setHistory = (historyParams = {}) => {
+export const setHistory = (navigate, historyParams = {}) => {
+  // Add navigate parameter
+  if (typeof navigate !== "function") {
+    console.error("setHistory requires a navigate function from useNavigate.");
+    return;
+  }
   savedFilters = historyParams.hasOwnProperty("filters")
     ? transformFilters(historyParams.filters)
     : savedFilters;
@@ -53,10 +59,13 @@ export const setHistory = (historyParams = {}) => {
   }
 
   const searchParams = new window.URLSearchParams(params);
-  history.push({
-    pathname: "/",
-    search: decodeURIComponent(`?${searchParams.toString()}`),
-  });
+  // history.push({  // Old way
+  //   pathname: "/",
+  //   search: decodeURIComponent(`?${searchParams.toString()}`),
+  // });
+  navigate(`/?${decodeURIComponent(searchParams.toString())}`, {
+    replace: true,
+  }); // New way
 };
 
 /**

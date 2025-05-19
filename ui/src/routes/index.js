@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { Route, Switch } from "react-router";
+import { Route, Routes } from "react-router-dom";
 import PropTypes from "prop-types";
 import Dashboard from "../components/Dashboard/Index";
 import PageLoader from "../components/PageLoader";
@@ -44,10 +44,10 @@ const RouterIndex = ({ isAppLoading, executions }) => {
           {!isAppLoading && !executions.length && <NoData />}
           {!isAppLoading && executions.length > 0 && (
             <Box component="div">
-              <Switch>
-                <Route exact path="/" component={Dashboard} />
-                <Route path="*" component={NotFound} />
-              </Switch>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
             </Box>
           )}
         </Box>
