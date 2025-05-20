@@ -27,7 +27,6 @@ func MockServer() (*api.Server, *testutils.MockStorage) {
 func TestInvalidRoue(t *testing.T) {
 
 	ms, _ := MockServer()
-	ms.BindEndpoints()
 	ms.Serve()
 
 	rr := httptest.NewRecorder()
@@ -55,7 +54,6 @@ func TestInvalidRoue(t *testing.T) {
 
 func TestHealthRequest(t *testing.T) {
 	ms, _ := MockServer()
-	ms.BindEndpoints()
 	ms.Serve()
 
 	rr := httptest.NewRecorder()
@@ -85,7 +83,6 @@ func TestHealthRequest(t *testing.T) {
 
 func TestGetSummary(t *testing.T) {
 	ms, _ := MockServer()
-	ms.BindEndpoints()
 	ms.Serve()
 
 	testCases := []struct {
@@ -139,7 +136,6 @@ func TestGetSummary(t *testing.T) {
 
 func TestGetResourcesData(t *testing.T) {
 	ms, _ := MockServer()
-	ms.BindEndpoints()
 	ms.Serve()
 
 	testCases := []struct {
@@ -194,7 +190,6 @@ func TestGetResourcesData(t *testing.T) {
 }
 func TestGetExecutions(t *testing.T) {
 	ms, _ := MockServer()
-	ms.BindEndpoints()
 	ms.Serve()
 
 	testCases := []struct {
@@ -239,7 +234,6 @@ func TestGetExecutions(t *testing.T) {
 }
 func TestSave(t *testing.T) {
 	ms, mockStorage := MockServer()
-	ms.BindEndpoints()
 	ms.Serve()
 
 	type tempBodyData struct {
@@ -295,7 +289,6 @@ func TestSave(t *testing.T) {
 
 func TestGetExecutionTags(t *testing.T) {
 	ms, _ := MockServer()
-	ms.BindEndpoints()
 	ms.Serve()
 
 	testCases := []struct {
@@ -348,7 +341,6 @@ func TestGetExecutionTags(t *testing.T) {
 
 func TestGetResourceTrends(t *testing.T) {
 	ms, _ := MockServer()
-	ms.BindEndpoints()
 	ms.Serve()
 
 	testCases := []struct {
@@ -404,7 +396,6 @@ func TestGetResourceTrends(t *testing.T) {
 
 func TestVersion(t *testing.T) {
 	ms, _ := MockServer()
-	ms.BindEndpoints()
 	ms.Serve()
 
 	testCases := []struct {
