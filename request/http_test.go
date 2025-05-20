@@ -2,14 +2,12 @@ package request
 
 import (
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"testing"
 	"time"
 
 	"github.com/gorilla/mux"
-	"net/http/httptest"
 )
 
 func HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
