@@ -21,7 +21,7 @@ type LambdaClientDescreptor interface {
 	ListTags(input *lambda.ListTagsInput) (*lambda.ListTagsOutput, error)
 }
 
-//LambdaManager describe lambda manager
+// LambdaManager describe lambda manager
 type LambdaManager struct {
 	client     LambdaClientDescreptor
 	awsManager common.AWSManager

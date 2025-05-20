@@ -198,19 +198,25 @@ func (sm *StorageManager) GetSummary(executionID string, filters map[string]stri
 	// (though typically a CollectStart/Finish should exist)
 	if resourceDetectedEvents != nil {
 		for _, hit := range resourceDetectedEvents.Hits {
-				var eventDataMap map[string]interface{}
-				hitData, err := json.Marshal(hit)
-				if err != nil {continue}
-				if err := json.Unmarshal(hitData, &eventDataMap); err != nil {continue}
-				resourceName, rnOK := eventDataMap["ResourceName"].(string)
-				if !rnOK {continue}
+			var eventDataMap map[string]interface{}
+			hitData, err := json.Marshal(hit)
+			if err != nil {
+				continue
+			}
+			if err := json.Unmarshal(hitData, &eventDataMap); err != nil {
+				continue
+			}
+			resourceName, rnOK := eventDataMap["ResourceName"].(string)
+			if !rnOK {
+				continue
+			}
 
-				if _, exists := summary[resourceName]; !exists {
-						summary[resourceName] = storage.CollectorsSummary{
-								ResourceName: resourceName,
-								// Status, ErrorMessage, EventTime will be zero/empty if no corresponding service_status event
-						}
+			if _, exists := summary[resourceName]; !exists {
+				summary[resourceName] = storage.CollectorsSummary{
+					ResourceName: resourceName,
+					// Status, ErrorMessage, EventTime will be zero/empty if no corresponding service_status event
 				}
+			}
 		}
 	}
 
@@ -222,7 +228,7 @@ func (sm *StorageManager) GetExecutions(queryLimit int) ([]storage.Executions, e
 	executions := []storage.Executions{}
 
 	searchParams := map[string]interface{}{
-		"q": "",
+		"q":         "",
 		"filter_by": "EventType=service_status",
 	}
 
@@ -275,7 +281,7 @@ func (sm *StorageManager) GetResources(resourceType string, executionID string, 
 	}
 
 	searchParams := map[string]interface{}{
-		"q": searchQuery,
+		"q":         searchQuery,
 		"filter_by": fmt.Sprintf("EventType=resource_detected AND ExecutionID=%s AND ResourceName=%s", executionID, resourceType),
 	}
 
@@ -316,7 +322,7 @@ func (sm *StorageManager) GetResourceTrends(resourceType string, filters map[str
 	}
 
 	searchParams := map[string]interface{}{
-		"q": "",
+		"q":         "",
 		"filter_by": filterStr,
 	}
 
@@ -380,7 +386,7 @@ func (sm *StorageManager) GetExecutionTags(executionID string) (map[string][]str
 	tags := map[string][]string{}
 
 	searchParams := map[string]interface{}{
-		"q": "",
+		"q":         "",
 		"filter_by": fmt.Sprintf("EventType=resource_detected AND ExecutionID=%s", executionID),
 	}
 
@@ -391,7 +397,7 @@ func (sm *StorageManager) GetExecutionTags(executionID string) (map[string][]str
 	}
 
 	log.WithFields(log.Fields{
-		"hits_count": len(result.Hits),
+		"hits_count":   len(result.Hits),
 		"execution_id": executionID,
 	}).Debug("Processing tags from search results")
 
@@ -412,105 +418,9 @@ func (sm *StorageManager) GetExecutionTags(executionID string) (map[string][]str
 		if err := json.Unmarshal(hitData, &tagsData); err != nil {
 			log.WithFields(log.Fields{
 				"error": err.Error(),
-				"hit": string(hitData),
+				"hit":   string(hitData),
 			}).Debug("Error parsing tags structure, trying alternative structure")
 			
 			// Try alternative structure where Data.Tag might be a generic map
 			var altTagsData struct {
 				Data map[string]interface{} `json:"Data"`
-			}
-			
-			if err := json.Unmarshal(hitData, &altTagsData); err != nil {
-				log.WithError(err).Debug("Error parsing alternative tags structure")
-				continue
-			}
-			
-			// Check if Tag exists in Data map
-			if tagData, ok := altTagsData.Data["Tag"]; ok {
-				// Try to cast to map[string]string or map[string]interface{}
-				if tagMap, ok := tagData.(map[string]string); ok {
-					for key, value := range tagMap {
-						tags[key] = append(tags[key], value)
-					}
-				} else if tagMapIface, ok := tagData.(map[string]interface{}); ok {
-					for key, value := range tagMapIface {
-						if strValue, ok := value.(string); ok {
-							tags[key] = append(tags[key], strValue)
-						}
-					}
-				}
-			}
-			
-			continue
-		}
-
-		// If we got here, we successfully parsed the expected structure
-		for key, value := range tagsData.Data.Tag {
-			tags[key] = append(tags[key], value)
-		}
-	}
-
-	// Make sure the values of each tag unique
-	for tagName, tagValues := range tags {
-		tags[tagName] = interpolation.UniqueStr(tagValues)
-	}
-
-	return tags, nil
-}
-
-// createIndex creates a new index if it doesn't exist
-func (sm *StorageManager) createIndex(name string) error {
-	exists, err := sm.client.IndexExists(name)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"index": name,
-		}).WithError(err).Error("Error when trying to check if meilisearch index exists")
-		return err
-	}
-
-	if exists {
-		log.WithField("index", name).Info("index already exists")
-		return nil
-	}
-
-	err = sm.client.CreateIndex(name)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"index": name,
-		}).WithError(err).Error("Error when trying to create meilisearch index")
-		return err
-	}
-
-	log.WithField("index", name).Info("index created successfully")
-	return nil
-}
-
-// getDurationUntilTomorrow returns the duration time until tomorrow
-func (sm *StorageManager) getDurationUntilTomorrow(now time.Time) time.Duration {
-	zone, _ := now.Zone()
-	location, err := time.LoadLocation(zone)
-	if err != nil {
-		log.WithError(err).WithField("zone", zone).Warn("zone name not found")
-		location = time.UTC
-	}
-
-	tomorrow := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, location)
-	return tomorrow.Sub(now)
-}
-
-// setCreateCurrentIndexDay create and set the current day as index
-func (sm *StorageManager) setCreateCurrentIndexDay() bool {
-	dt := time.Now().In(time.UTC)
-	newIndex := fmt.Sprintf(prefixIndexName, dt.Format("01-02-2006"))
-	log.WithFields(log.Fields{
-		"current_index_day":    sm.currentIndexDay,
-		"to_current_index_day": newIndex,
-	}).Info("change current index day")
-	err := sm.createIndex(newIndex)
-	if err != nil {
-		return false
-	}
-
-	sm.currentIndexDay = newIndex
-	return true
-} 

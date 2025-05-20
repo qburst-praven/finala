@@ -16,7 +16,7 @@ type EmailSender interface {
 	Send(to, subject, body string) error
 }
 
-//SMTPSender is the implementation of gmail.v2
+// SMTPSender is the implementation of gmail.v2
 type SMTPSender struct {
 	Dialer *gomail.Dialer
 }
@@ -55,7 +55,7 @@ func (s *SMTPSender) Send(to, subject, body, attachment string) error {
 	return d.DialAndSend(m)
 }
 
-//func CreatePDF(pdfFileName, title string, data [][]string) {
+// CreatePDF generates a PDF document from the given data.
 func CreatePDF(pdfFileName, description string, data []map[string]interface{}, sendEmailInfo config.SendEmailInfo) {
 	pdf := gofpdf.New("P", "mm", "A4", "")
 	pdf.AddPage()
@@ -104,7 +104,7 @@ func CreatePDF(pdfFileName, description string, data []map[string]interface{}, s
 				}
 				// bing values to the cell
 				x := marginH
-				for colJ, _ := range orderKeys {
+				for colJ := range orderKeys {
 					cell = cellList[colJ]
 					cellY := 3 + y + cellGap + (maxHt-cell.ht)/2
 					if cellY > 240 {
@@ -145,7 +145,7 @@ func configureHeaderColumn(sendEmailInfo config.SendEmailInfo, data []map[string
 	if len(sendEmailInfo.Columns) == 0 {
 		for _, headerCol := range data[0] {
 			if innerMap, ok := headerCol.(map[string]interface{}); ok {
-				for colKeys, _ := range innerMap {
+				for colKeys := range innerMap {
 					if colKeys != "LaunchTime" {
 						orderKeys = append(orderKeys, colKeys)
 					}
@@ -164,7 +164,7 @@ func configureHeaderColumn(sendEmailInfo config.SendEmailInfo, data []map[string
 
 	var numCols = len(orderKeys)
 
-	for _, _ = range orderKeys {
+	for range orderKeys {
 
 		columnWidths = append(columnWidths, float64(195/numCols))
 	}

@@ -22,7 +22,7 @@ type ElasticCacheClientDescreptor interface {
 	ListTagsForResource(*elasticache.ListTagsForResourceInput) (*elasticache.TagListMessage, error)
 }
 
-//ElasticacheManager describe elasticsearch struct
+// ElasticacheManager describe elasticsearch struct
 type ElasticacheManager struct {
 	client             ElasticCacheClientDescreptor
 	awsManager         common.AWSManager

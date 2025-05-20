@@ -74,7 +74,7 @@ func LoadAPI(location string) (APIConfig, error) {
 		}).Info("override storage endpoint")
 		config.Storage.Meilisearch.Endpoints = strings.Split(overrideStorageEndpoint, ",")
 	}
-	
+
 	overrideStoragePassword := os.Getenv("OVERRIDE_STORAGE_PASSWORD")
 	if overrideStoragePassword != "" {
 		log.WithFields(log.Fields{

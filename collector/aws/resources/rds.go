@@ -26,7 +26,7 @@ type RDSClientDescreptor interface {
 	ListTagsForResource(*rds.ListTagsForResourceInput) (*rds.ListTagsForResourceOutput, error)
 }
 
-//RDSManager describe RDS struct
+// RDSManager describe RDS struct
 type RDSManager struct {
 	client             RDSClientDescreptor
 	awsManager         common.AWSManager

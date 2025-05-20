@@ -15,7 +15,7 @@ const (
 	ResourcePrefix = "aws"
 )
 
-//Analyze represents the aws analyze
+// Analyze represents the aws analyze
 type Analyze struct {
 	cl            collector.CollectorDescriber
 	metricManager collector.MetricDescriptor

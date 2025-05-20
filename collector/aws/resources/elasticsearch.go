@@ -237,7 +237,7 @@ func (esm *ElasticSearchManager) Detect(metrics []config.MetricConfig) (interfac
 	return detectedElasticSearchClusters, nil
 }
 
-//getPricingFilterInput prepares Elasticsearch pricing filter
+// getPricingFilterInput prepares Elasticsearch pricing filter
 func (esm *ElasticSearchManager) getPricingFilterInput(extraFilters []*pricing.Filter) pricing.GetProductsInput {
 	filters := []*pricing.Filter{
 		{

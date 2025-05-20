@@ -22,7 +22,7 @@ type DocumentDBClientDescreptor interface {
 	ListTagsForResource(*docdb.ListTagsForResourceInput) (*docdb.ListTagsForResourceOutput, error)
 }
 
-//DocumentDBManager describe documentDB struct
+// DocumentDBManager describe documentDB struct
 type DocumentDBManager struct {
 	client             DocumentDBClientDescreptor
 	awsManager         common.AWSManager

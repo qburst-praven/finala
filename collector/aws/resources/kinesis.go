@@ -208,7 +208,7 @@ func (km *KinesisManager) Detect(metrics []config.MetricConfig) (interface{}, er
 	return detectedStreams, nil
 }
 
-//getPricingFilterInput prepares kinesis pricing filter
+// getPricingFilterInput prepares kinesis pricing filter
 func (km *KinesisManager) getPricingFilterInput(extraFilters []*pricing.Filter) pricing.GetProductsInput {
 	filters := []*pricing.Filter{
 		{

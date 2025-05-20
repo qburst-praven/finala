@@ -167,12 +167,12 @@ func (server *Server) DetectEvents(resp http.ResponseWriter, req *http.Request) 
 	server.JSONWrite(resp, http.StatusAccepted, nil)
 }
 
-//NotFoundRoute return when route not found
+// NotFoundRoute return when route not found
 func (server *Server) NotFoundRoute(resp http.ResponseWriter, req *http.Request) {
 	server.JSONWrite(resp, http.StatusNotFound, HttpErrorResponse{Error: "Path not found"})
 }
 
-//HealthCheckHandler return ok if server is up
+// HealthCheckHandler return ok if server is up
 func (server *Server) HealthCheckHandler(resp http.ResponseWriter, req *http.Request) {
 	server.JSONWrite(resp, http.StatusOK, HealthResponse{Status: true})
 }

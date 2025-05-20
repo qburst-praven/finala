@@ -87,7 +87,7 @@ func (server *Server) BindEndpoints() {
 	server.router.HandleFunc("POST /api/v1/send-report", server.SendReport)
 	server.router.HandleFunc("GET /api/v1/version", server.VersionHandler)
 	server.router.HandleFunc("GET /api/v1/health", server.HealthCheckHandler)
-	
+
 	// Add a catch-all handler for not found routes
 	server.router.HandleFunc("/", server.NotFoundRoute)
 }

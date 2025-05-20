@@ -9,7 +9,8 @@ import (
 
 // Elapsed print time elapse
 // Example fo use:
-//       defer visibility.Elapsed("some message")()
+//
+//	defer visibility.Elapsed("some message")()
 func Elapsed(what string) func() {
 	start := time.Now()
 	return func() {

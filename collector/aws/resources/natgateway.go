@@ -23,7 +23,7 @@ type NatGatewayClientDescriptor interface {
 	DescribeNatGateways(*ec2.DescribeNatGatewaysInput) (*ec2.DescribeNatGatewaysOutput, error)
 }
 
-//NatGatewayManager describes NAT gateway struct
+// NatGatewayManager describes NAT gateway struct
 type NatGatewayManager struct {
 	client             NatGatewayClientDescriptor
 	awsManager         common.AWSManager

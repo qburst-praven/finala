@@ -22,7 +22,7 @@ type RedShiftClientDescriptor interface {
 	DescribeClusters(*redshift.DescribeClustersInput) (*redshift.DescribeClustersOutput, error)
 }
 
-//RedShiftManager describe elasticsearch struct
+// RedShiftManager describe elasticsearch struct
 type RedShiftManager struct {
 	client             RedShiftClientDescriptor
 	awsManager         common.AWSManager
