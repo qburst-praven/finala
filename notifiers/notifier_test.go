@@ -4,7 +4,6 @@ import (
 	"finala/notifiers"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -58,9 +57,9 @@ func (mc *dataFetcherMockClient) DO(r *http.Request) (*http.Response, error) {
 	var newBody io.ReadCloser
 	switch r.URL.Path {
 	case "/api/v1/executions":
-		newBody = ioutil.NopCloser(strings.NewReader(expectedLatestExecutionsResponse))
+		newBody = io.NopCloser(strings.NewReader(expectedLatestExecutionsResponse))
 	case fmt.Sprintf("/api/v1/summary/%s", expectedLatestExecutionID):
-		newBody = ioutil.NopCloser(strings.NewReader(expectedSummaryResponse))
+		newBody = io.NopCloser(strings.NewReader(expectedSummaryResponse))
 	}
 	return &http.Response{
 		Body: newBody,

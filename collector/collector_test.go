@@ -1,14 +1,16 @@
 package collector_test
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"finala/collector"
 	"finala/request"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
+	"net/http/httptest"
 	"sync"
 	"testing"
 	"time"
@@ -28,7 +30,7 @@ type ReceivedData struct {
 
 func (rd *ReceivedData) HandleRequestHandler(resp http.ResponseWriter, req *http.Request) {
 	resp.WriteHeader(rd.returnStatusCode)
-	buf, bodyErr := ioutil.ReadAll(req.Body)
+	buf, bodyErr := io.ReadAll(req.Body)
 	if bodyErr != nil {
 		resp.WriteHeader(http.StatusBadRequest)
 		return
