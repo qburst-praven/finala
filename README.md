@@ -52,6 +52,20 @@ Neptune             | :ballot_box_with_check:    | :heavy_minus_sign:
 RDS                 | :ballot_box_with_check:    | :heavy_minus_sign:
 RedShift            | :ballot_box_with_check:    | :heavy_minus_sign:
 
+## Recent Project Upgrades
+
+This project has recently undergone significant upgrades to modernize its stack and improve its core functionalities. Key changes include:
+
+*   **Search Backend Modernization**: Migrated from Elasticsearch to Meilisearch for an improved search experience.
+*   **Go Version Update**: Upgraded to the latest Go version along with its dependencies, ensuring better performance and security.
+*   **Frontend Overhaul**:
+    *   Upgraded React to v18.
+    *   Updated Material-UI (MUI) to v5.
+    *   Migrated to React Router v6.
+    *   Upgraded Webpack to v5 and updated related loaders and plugins for a more efficient build process.
+*   **Containerization Improvements**: Updated Dockerfiles for both development and production environments, optimizing build layers and improving security by using non-root users and newer base images.
+*   **General Dependency Updates**: Various other packages and dependencies across the project have been updated to their latest stable versions.
+
 ## QuickStart
 
 Follow the [quick start](https://finala.io/docs/getting-started/quick-start) in our documentation to get familiar with Finala.
