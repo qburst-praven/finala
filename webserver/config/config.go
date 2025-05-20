@@ -1,7 +1,7 @@
 package config
 
 import (
-	"io/ioutil"
+	"os"
 
 	"gopkg.in/yaml.v2"
 
@@ -22,7 +22,7 @@ type WebserverConfig struct {
 // Load will load yaml file go struct
 func Load(location string) (WebserverConfig, error) {
 	config := WebserverConfig{}
-	data, err := ioutil.ReadFile(location)
+	data, err := os.ReadFile(location)
 	if err != nil {
 		log.Errorf("Could not parse configuration file: %s", err)
 		return config, err

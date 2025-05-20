@@ -3,7 +3,7 @@ package config
 import (
 	notifierCommon "finala/notifiers/common"
 	notifierLoader "finala/notifiers/load"
-	"io/ioutil"
+	"os"
 
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
@@ -36,7 +36,7 @@ func (nfc *NotifierConfig) BuildNotifiers() (registeredNotifiers []notifierCommo
 // Load will load yaml file
 func Load(location string, notifierLog log.Entry) (config NotifierConfig, err error) {
 	var data []byte
-	if data, err = ioutil.ReadFile(location); err != nil {
+	if data, err = os.ReadFile(location); err != nil {
 		if err != nil {
 			notifierLog.Errorf("Could not parse configuration file: %s", err)
 			return config, err

@@ -160,7 +160,7 @@ func configureHeaderColumn(sendEmailInfo config.SendEmailInfo, data []map[string
 		}
 	}
 
-	sort.Sort(sort.StringSlice(orderKeys))
+	sort.Strings(orderKeys)
 
 	var numCols = len(orderKeys)
 
@@ -172,6 +172,7 @@ func configureHeaderColumn(sendEmailInfo config.SendEmailInfo, data []map[string
 	return orderKeys, columnWidths
 }
 
+/* // Function filterExecutnData removed as it was unused
 func filterExecutnData(sendEmailInfo config.SendEmailInfo, data []map[string]interface{}) []map[string]interface{} {
 	var result []map[string]interface{}
 	if len(sendEmailInfo.Filters) != 0 {
@@ -190,3 +191,4 @@ func filterExecutnData(sendEmailInfo config.SendEmailInfo, data []map[string]int
 	}
 	return data
 }
+*/

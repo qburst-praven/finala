@@ -1,7 +1,7 @@
 package config
 
 import (
-	"io/ioutil"
+	// "io/ioutil" // Removed ioutil
 	"os"
 	"time"
 
@@ -67,7 +67,7 @@ type CollectorConfig struct {
 // Load will load yaml file go struct
 func Load(location string) (CollectorConfig, error) {
 	config := CollectorConfig{}
-	data, err := ioutil.ReadFile(location)
+	data, err := os.ReadFile(location) // Changed from ioutil.ReadFile
 	if err != nil {
 		log.Errorf("Could not parse configuration file: %s", err)
 		return config, err

@@ -237,10 +237,18 @@ func (server *Server) SendReport(resp http.ResponseWriter, req *http.Request) {
 	pdfContent := "A Comprehensive Analysis of Efficiency Factors and Recommendations for Improvement"
 	email_utility.CreatePDF(pdfFileName, pdfContent, responseData, sendEmailInfo)
 	emailConfig, err := config.LoadAPI("/etc/finala/config.yaml")
+	if err != nil {
+		server.JSONWrite(resp, http.StatusInternalServerError, HttpErrorResponse{Error: "Failed to load email configuration: " + err.Error()})
+		return
+	}
 	username := emailConfig.SMTPConf.Username
 	password := emailConfig.SMTPConf.Password
 	smtpServer := emailConfig.SMTPConf.SMTPServer
-	smtpPort, _ := strconv.Atoi(emailConfig.SMTPConf.SMTPPort)
+	smtpPort, err := strconv.Atoi(emailConfig.SMTPConf.SMTPPort)
+	if err != nil {
+		server.JSONWrite(resp, http.StatusInternalServerError, HttpErrorResponse{Error: "Invalid SMTP port in configuration: " + err.Error()})
+		return
+	}
 	subject := "Finala Report"
 	body := "<p>Kindly review the attached PDF for the comprehensive report on Finala.</p>"
 	sender := email_utility.NewSMTPSender(smtpServer, smtpPort, username, password)
