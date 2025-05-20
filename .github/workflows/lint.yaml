@@ -9,15 +9,8 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
-      - name: Display config files for diagnostics
-        run: |
-          echo "--- webserver/config/config.go ---"
-          cat webserver/config/config.go
-          echo "--- notifiers/config/config.go ---"
-          cat notifiers/config/config.go
-          echo "--- collector/config/config.go ---"
-          cat collector/config/config.go
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v4
         with:
           version: v1.55.2
+          skip-cache: true
