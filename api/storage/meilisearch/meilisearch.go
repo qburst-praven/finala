@@ -424,3 +424,26 @@ func (sm *StorageManager) GetExecutionTags(executionID string) (map[string][]str
 			// Try alternative structure where Data.Tag might be a generic map
 			var altTagsData struct {
 				Data map[string]interface{} `json:"Data"`
+			}
+			// Attempt to unmarshal with alternative structure (assuming it's missing)
+			if err := json.Unmarshal(hitData, &altTagsData); err == nil {
+				// TODO: Implement logic to process altTagsData and populate the tags map
+				// For example, iterate over altTagsData.Data if it contains tag-like structures
+				// and add them to the 'tags' map.
+				// Example: 
+				// if actualTags, ok := altTagsData.Data["Tag"].(map[string]string); ok {
+				// 	 for k, v := range actualTags {
+				// 		 tags[k] = append(tags[k], v)
+				// 	 }
+				// }
+			} else {
+				log.WithFields(log.Fields{
+					"alt_error": err.Error(),
+					"hit":   string(hitData),
+				}).Debug("Error parsing tags with alternative structure as well")
+			}
+		}
+	}
+
+	return tags, nil
+}

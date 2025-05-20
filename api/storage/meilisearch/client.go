@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	ms "github.com/meilisearch/meilisearch-go"
-	"github.com/qburst/finala/api/config"
+	"finala/api/config"
 	log "github.com/sirupsen/logrus"
 )
 
