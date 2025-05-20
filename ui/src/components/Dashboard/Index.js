@@ -47,9 +47,9 @@ const DashboardIndex = ({
    * Will clear selected filter and show main page
    */
   const gotoHome = () => {
-    const updatedFilters = filters.filter(
-      (filter) => filter.id.substr(0, 8) !== "resource"
-    );
+    const updatedFilters = filters.filter((filter) => {
+      return filter.id.substr(0, 8) !== "resource";
+    });
     setResource(null);
     setFilters(updatedFilters);
     setHistory(navigate, { filters: updatedFilters });

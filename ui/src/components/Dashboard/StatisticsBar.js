@@ -94,7 +94,7 @@ const StatisticsBar = ({
                       <Typography
                         variant="inherit"
                         sx={{
-                          fontSize: "56px",
+                          fontSize: "42px",
                           color: "orangered",
                           fontFamily: "MuseoModerno",
                           minHeight: "63px",
@@ -117,7 +117,7 @@ const StatisticsBar = ({
                       <Typography
                         variant="inherit"
                         sx={{
-                          fontSize: "56px",
+                          fontSize: "42px",
                           color: "purple",
                           fontFamily: "MuseoModerno",
                           minHeight: "63px",
@@ -138,7 +138,7 @@ const StatisticsBar = ({
                   <Typography
                     variant="inherit"
                     sx={{
-                      fontSize: "56px",
+                      fontSize: "42px",
                       color: "darkgreen",
                       fontFamily: "Nunito",
                       fontWeight: "400",

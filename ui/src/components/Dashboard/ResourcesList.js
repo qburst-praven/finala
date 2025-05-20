@@ -17,10 +17,13 @@ const useStyles = makeStyles(() => ({
   resource_chips: {
     fontWeight: "bold",
     fontFamily: "Arial !important",
-    margin: "5px",
-    borderRadius: "1px",
-    backgroundColor: "#ffffff",
-    borderLeft: "5px solid #ffffff",
+    margin: "24px 12px",
+    borderRadius: "16px",
+    backgroundColor: "#FAFAFA",
+    borderLeftWidth: "5px",
+    borderLeftStyle: "solid",
+    borderBottomWidth: "2px",
+    borderBottomStyle: "solid",
     fontSize: "14px",
   },
 }));
@@ -89,16 +92,22 @@ const ResourcesList = ({ resources, filters, addFilter, setResource }) => {
       {resourcesList.length > 0 && (
         <Box mb={3}>
           <h4 className={classes.title}>Resources:</h4>
-          {resourcesList.map((resource, i) => (
-            <Chip
-              className={classes.resource_chips}
-              onClick={() => setSelectedResource(resource)}
-              style={{ borderLeftColor: colors[i].hex }}
-              ma={2}
-              label={resource.title}
-              key={i}
-            />
-          ))}
+          {resourcesList.map((resource, i) => {
+            const chipColor =
+              colors[i] && colors[i].hex ? colors[i].hex : "#cccccc";
+            return (
+              <Chip
+                key={i}
+                className={classes.resource_chips}
+                label={resource.title}
+                onClick={() => setSelectedResource(resource)}
+                style={{
+                  borderLeft: `5px solid ${chipColor}`,
+                  borderBottom: `2px solid ${chipColor}`,
+                }}
+              />
+            );
+          })}
         </Box>
       )}
     </Fragment>

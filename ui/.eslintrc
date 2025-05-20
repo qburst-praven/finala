@@ -1,35 +1,41 @@
 {
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
     "ecmaFeatures": {
-      "legacyDecorators": true
+      "jsx": true
     }
   },
   "plugins": ["react", "prettier"],
   "rules": {
     "prettier/prettier": "error",
-    "no-unused-vars": 1,
-    "no-console": 1,
-    "react/display-name": 0
+    "no-unused-vars": "warn",
+    "no-console": "warn",
+    "react/display-name": "off"
   },
   "globals": {
-    "Promise": true,
-    "document": true,
-    "window": true,
-    "fetch": true,
-    "console": true,
-    "module": true,
-    "setTimeout": true,
-    "clearTimeout": true
+    "Promise": "readonly",
+    "document": "readonly",
+    "window": "readonly",
+    "fetch": "readonly",
+    "module": "readonly",
+    "setTimeout": "readonly",
+    "clearTimeout": "readonly"
   },
   "env": {
-    "amd": true
+    "browser": true,
+    "node": true
   },
-  "extends": ["eslint:recommended", "plugin:react/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:prettier/recommended"
+  ],
   "settings": {
     "react": {
       "pragma": "React",
-      "version": "16.6.0"
+      "version": "detect"
     }
   }
 }

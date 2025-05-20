@@ -52,7 +52,7 @@ function Summary(executionID, filters = []) {
     ...getTransformedFilters(filters),
   };
   const searchParams = decodeURIComponent(
-    new window.URLSearchParams(params).toString()
+    new window.URLSearchParams(params).toString(),
   );
 
   return http

@@ -12,9 +12,9 @@ export function filters(state = initialState, action) {
     const id = action.data.id;
 
     if (data.type === "resource") {
-      const inFiltersResourceIndex = state.filters.findIndex(
-        (row) => row.type === "resource"
-      );
+      const inFiltersResourceIndex = state.filters.findIndex((row) => {
+        return row.type === "resource";
+      });
       if (inFiltersResourceIndex !== -1) {
         state.filters[inFiltersResourceIndex] = action.data;
       }
@@ -25,9 +25,9 @@ export function filters(state = initialState, action) {
       state.filters.push(action.data);
     }
 
-    state.filters = state.filters.filter(
-      (row) => row.type !== "tag:incomplete"
-    );
+    state.filters = state.filters.filter((row) => {
+      return row.type !== "tag:incomplete";
+    });
 
     return state.filters;
   };

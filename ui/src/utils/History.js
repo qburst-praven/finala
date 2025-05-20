@@ -42,11 +42,14 @@ export const setHistory = (navigate, historyParams = {}) => {
     console.error("setHistory requires a navigate function from useNavigate.");
     return;
   }
-  savedFilters = historyParams.hasOwnProperty("filters")
+  savedFilters = Object.prototype.hasOwnProperty.call(historyParams, "filters")
     ? transformFilters(historyParams.filters)
     : savedFilters;
 
-  savedExecutionId = historyParams.hasOwnProperty("executionId")
+  savedExecutionId = Object.prototype.hasOwnProperty.call(
+    historyParams,
+    "executionId",
+  )
     ? historyParams.executionId
     : savedExecutionId;
   const params = {};

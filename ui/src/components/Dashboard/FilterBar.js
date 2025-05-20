@@ -67,18 +67,20 @@ const FilterBar = ({
   const fetchTags = async () => {
     clearTimeout(fetchTagsTimeout);
     const responseData = await TagsService.list(currentExecution).catch(
-      () => false
+      () => false,
     );
     if (!responseData) {
       fetchTagsTimeout = setTimeout(fetchTags, 5000);
       return false;
     }
 
-    const tagOptions = Object.keys(responseData).map((tagKey) => ({
-      title: tagKey.trim(),
-      id: tagKey.trim(),
-      type: "tag:option",
-    }));
+    const tagOptions = Object.keys(responseData).map((tagKey) => {
+      return {
+        title: tagKey.trim(),
+        id: tagKey.trim(),
+        type: "tag:option",
+      };
+    });
 
     if (!isFilterBarOpen.current) {
       setTags(responseData);

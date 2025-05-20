@@ -203,79 +203,81 @@ const ResourceTable = ({
         </Card>
       )}
 
-      {!hasError && currentResourceData.length > 0 && !isResourceTableLoading && (
-        <div id="resourcewrap">
-          {/* {"GET FLITES object :-" + JSON.stringify(getFlits, null, 2)}
+      {!hasError &&
+        currentResourceData.length > 0 &&
+        !isResourceTableLoading && (
+          <div id="resourcewrap">
+            {/* {"GET FLITES object :-" + JSON.stringify(getFlits, null, 2)}
           {"GET cols array:-" + JSON.stringify(getCols, null, 2)} */}
-          <MUIDataTable
-            data={currentResourceData}
-            columns={headers}
-            options={Object.assign(tableOptions, {
-              customSearch: (searchQuery, currentRow, columns) => {
-                // You can return your custom icon component here
-                return "EMAIL";
-              },
-              onSearchChange: (searchText) => {
-                dispatchSearchText(searchText);
-                setTableFilters([
-                  {
-                    key: "search",
-                    value: searchText ? searchText : "",
-                  },
-                ]);
-              },
-              onColumnSortChange: (changedColumn, direction) => {
-                setTableFilters([
-                  { key: "sortColumn", value: changedColumn },
-                  { key: "direction", value: direction },
-                ]);
-              },
-              onChangePage: (currentPage) => {
-                setTableFilters([{ key: "page", value: currentPage }]);
-              },
-              onChangeRowsPerPage: (numberOfRows) => {
-                setTableFilters([{ key: "rows", value: numberOfRows }]);
-              },
-              downloadOptions: {
-                filename: `${currentResource}.csv`,
-              },
-              customToolbar: () => {
-                return <CustomToolbar />;
-              },
-              onFilterChipClose: (index, removedFilter, filterList) => {
-                removeFiltersObject({
-                  column: "Data." + removedFilter,
-                  index: index,
-                  filterList: filterList,
-                });
-              },
-              onFilterChange: (column, filterList, type, index) => {
-                addFiltersObject({
-                  ["Data." + column]: String(filterList[index][0]),
-                });
-              },
-              onColumnViewChange: (changedColumn, action) => {
-                // Callback when the columns are shown or hidden
-                var filterNameArrayNew = getCols;
-                if (action === "remove") {
-                  const index = filterNameArrayNew.indexOf(changedColumn);
-                  if (index > -1) {
-                    // only splice array when item is found
-                    filterNameArrayNew.splice(index, 1); // 2nd parameter means remove one item only
+            <MUIDataTable
+              data={currentResourceData}
+              columns={headers}
+              options={Object.assign(tableOptions, {
+                customSearch: (searchQuery, currentRow, columns) => {
+                  // You can return your custom icon component here
+                  return "EMAIL";
+                },
+                onSearchChange: (searchText) => {
+                  dispatchSearchText(searchText);
+                  setTableFilters([
+                    {
+                      key: "search",
+                      value: searchText ? searchText : "",
+                    },
+                  ]);
+                },
+                onColumnSortChange: (changedColumn, direction) => {
+                  setTableFilters([
+                    { key: "sortColumn", value: changedColumn },
+                    { key: "direction", value: direction },
+                  ]);
+                },
+                onChangePage: (currentPage) => {
+                  setTableFilters([{ key: "page", value: currentPage }]);
+                },
+                onChangeRowsPerPage: (numberOfRows) => {
+                  setTableFilters([{ key: "rows", value: numberOfRows }]);
+                },
+                downloadOptions: {
+                  filename: `${currentResource}.csv`,
+                },
+                customToolbar: () => {
+                  return <CustomToolbar />;
+                },
+                onFilterChipClose: (index, removedFilter, filterList) => {
+                  removeFiltersObject({
+                    column: "Data." + removedFilter,
+                    index: index,
+                    filterList: filterList,
+                  });
+                },
+                onFilterChange: (column, filterList, type, index) => {
+                  addFiltersObject({
+                    ["Data." + column]: String(filterList[index][0]),
+                  });
+                },
+                onColumnViewChange: (changedColumn, action) => {
+                  // Callback when the columns are shown or hidden
+                  var filterNameArrayNew = getCols;
+                  if (action === "remove") {
+                    const index = filterNameArrayNew.indexOf(changedColumn);
+                    if (index > -1) {
+                      // only splice array when item is found
+                      filterNameArrayNew.splice(index, 1); // 2nd parameter means remove one item only
+                    }
+                    // setSelectedColumns(selectedColumns.filter((col) => col !== changedColumn));
+                  } else {
+                    if (filterNameArrayNew.indexOf(changedColumn) === -1) {
+                      filterNameArrayNew.push(changedColumn);
+                    }
+                    // setSelectedColumns([...selectedColumns, changedColumn]);
                   }
-                  // setSelectedColumns(selectedColumns.filter((col) => col !== changedColumn));
-                } else {
-                  if (filterNameArrayNew.indexOf(changedColumn) === -1) {
-                    filterNameArrayNew.push(changedColumn);
-                  }
-                  // setSelectedColumns([...selectedColumns, changedColumn]);
-                }
-                checkUncheckColumns(filterNameArrayNew);
-              },
-            })}
-          />
-        </div>
-      )}
+                  checkUncheckColumns(filterNameArrayNew);
+                },
+              })}
+            />
+          </div>
+        )}
     </Fragment>
   );
 };

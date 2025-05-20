@@ -14,7 +14,7 @@ export const useTableFilters = () => {
     window.history.replaceState(
       null,
       null,
-      decodeURIComponent(`?${searchParams.toString()}`)
+      decodeURIComponent(`?${searchParams.toString()}`),
     );
   }, [state]);
 
