@@ -42,7 +42,9 @@ const LoginPage = () => {
           throw new Error("API endpoint not found in settings");
         }
       } catch (err) {
+        /* eslint-disable no-console */
         console.error("Error fetching API config:", err);
+        /* eslint-enable no-console */
         setConfigError(
           `Failed to load API configuration: ${err.message}. Using default.`,
         );
@@ -94,10 +96,12 @@ const LoginPage = () => {
             apiError = errorData.error;
           }
         } catch (e) {
+          /* eslint-disable no-console */
           console.error(
             "Could not parse error response as JSON:",
             responseText,
           );
+          /* eslint-enable no-console */
           if (responseText.length < 200) {
             apiError = `Server error: ${responseText}`;
           } else {
@@ -113,7 +117,6 @@ const LoginPage = () => {
         const data = JSON.parse(responseText);
         if (data.token) {
           localStorage.setItem("finalaAuthToken", data.token);
-          console.log("Login successful, token:", data.token);
           setUsername("");
           setPassword("");
           navigate("/");
@@ -121,15 +124,19 @@ const LoginPage = () => {
           setError(data.error || "Login successful but no token received.");
         }
       } catch (e) {
+        /* eslint-disable no-console */
         console.error(
           "Failed to parse successful response JSON:",
           responseText,
           e,
         );
+        /* eslint-enable no-console */
         setError("Received an invalid response from the server.");
       }
     } catch (err) {
+      /* eslint-disable no-console */
       console.error("Login API error:", err);
+      /* eslint-enable no-console */
       // Check if it's a CORS issue or network failure when apiBaseUrl is directly used
       if (err instanceof TypeError && apiBaseUrl.startsWith("http")) {
         // Likely network error (CORS, server down)
@@ -210,6 +217,16 @@ const LoginPage = () => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             disabled={loading || !!configError}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "#DC143C",
+                },
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "#DC143C",
+              },
+            }}
           />
           <TextField
             margin="normal"
@@ -223,6 +240,16 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={loading || !!configError}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "&.Mui-focused fieldset": {
+                  borderColor: "#DC143C",
+                },
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "#DC143C",
+              },
+            }}
           />
           {error && (
             <Alert severity="error" sx={{ width: "100%", mt: 2, mb: 1 }}>
@@ -233,7 +260,14 @@ const LoginPage = () => {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{
+              mt: 3,
+              mb: 2,
+              bgcolor: "#DC143C",
+              "&:hover": {
+                bgcolor: "#B01030",
+              },
+            }}
             disabled={loading || !!configError}
           >
             {loading ? (
@@ -244,16 +278,6 @@ const LoginPage = () => {
           </Button>
         </Box>
       </Paper>
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        align="center"
-        sx={{ mt: 5 }}
-      >
-        {"© "}
-        Finala {new Date().getFullYear()}
-        {"."}
-      </Typography>
     </Container>
   );
 };

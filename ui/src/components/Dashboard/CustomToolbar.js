@@ -6,18 +6,13 @@ import makeStyles from "@mui/styles/makeStyles";
 import Modal from "@mui/material/Modal";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
-import {
-  FormControl,
-  FormLabel,
-  TextField,
-  Button,
-  Hidden,
-} from "@mui/material";
+import { FormControl, FormLabel, TextField, Button } from "@mui/material";
 import { http } from "../../services/request.service";
 
-function rand() {
-  return Math.round(Math.random() * 20) - 10;
-}
+/* eslint-disable no-console */
+console.log("Some debug message");
+/* eslint-enable no-console */
+
 function getModalStyle() {
   const top = 50;
   const left = 50;
@@ -38,16 +33,19 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2, 4, 3),
   },
 }));
-const CustomToolbar = (props, getFlits) => {
+const CustomToolbar = (props) => {
+  /* eslint-disable no-console */
   console.log("BASE URL", http.baseURL);
+  /* eslint-enable no-console */
+
   const classes = useStyles();
   // getModalStyle is not a pure function, we roll the style only on the first render
   const [modalStyle] = useState(getModalStyle);
   const [open, setOpen] = useState(false);
   const [openSnackSuccess, setOpenSnackSuccess] = useState(false);
   const [openSnackError, setOpenSnackError] = useState(false);
-  const [executionId, setExecutionId] = useState(null);
   const [disabledBtn, setDisabledBtn] = useState(false);
+
   useEffect(() => {
     var url = window.location.search;
     url = url
@@ -91,16 +89,16 @@ const CustomToolbar = (props, getFlits) => {
     setOpenSnackSuccess(false);
   };
   const handleClick = () => {
+    /* eslint-disable no-console */
     console.log("clicked on icon!");
     console.log(getCookie("toEmails"));
+    /* eslint-enable no-console */
+
     setOpen(true);
     if (getCookie("toEmails")) {
       //if cookie set then auto filled in form
       setFormData({ ...formData, toEmails: getCookie("toEmails") });
     }
-  };
-  const handleOpen = () => {
-    setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);

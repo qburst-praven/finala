@@ -15,7 +15,7 @@ const Logo = ({ width, height }) => {
           fillRule="evenodd"
         >
           <g
-            id="7.9”-iPad-mini-Copy"
+            id="7.9-iPad-mini-Copy"
             transform="translate(-375.000000, -349.000000)"
           >
             <g id="Group" transform="translate(375.000000, 349.000000)">
@@ -54,7 +54,7 @@ const Logo = ({ width, height }) => {
                 fontFamily="MuseoModerno-SemiBold, MuseoModerno"
                 fontSize="55"
                 fontWeight="500"
-                fill="#545454"
+                fill="#DC143C"
               >
                 <tspan x="0" y="63">
                   Finala

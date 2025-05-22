@@ -18,7 +18,7 @@ import DataFactory from "../components/DataFactory";
 import LoginPage from "../components/auth/LoginPage";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 
-import { CssBaseline, Box, Button } from "@mui/material";
+import { CssBaseline, Box } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles(() => ({
@@ -67,14 +67,9 @@ const RouterIndex = ({ isAppLoading, executions }) => {
 };
 
 const AppLayout = ({ isAppLoading, executions }) => {
-  const classes = useStyles();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("finalaAuthToken");
-    navigate("/login");
-  };
-
+  const classes = useStyles();
   return (
     <div className={classes.root}>
       <CssBaseline />

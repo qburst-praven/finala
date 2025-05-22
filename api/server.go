@@ -11,10 +11,10 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	authhandlers "finala/api/handlers"
 	"finala/api/storage"
 	"finala/serverutil"
 	"finala/version"
-	authhandlers "finala/api/handlers"
 )
 
 const (

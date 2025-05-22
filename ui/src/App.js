@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { BrowserRouter } from "react-router-dom";
 import Routes from "./routes";
 import { connect } from "react-redux";
@@ -30,7 +29,4 @@ function mapStateToProps() {
   return {};
 }
 
-App.propTypes = {
-  // history: PropTypes.object,
-};
 export default connect(mapStateToProps)(App);

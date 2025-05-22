@@ -74,6 +74,14 @@ const DashboardIndex = ({
                   localStorage.removeItem("finalaAuthToken");
                   navigate("/login");
                 }}
+                sx={{
+                  color: "#DC143C",
+                  borderColor: "#DC143C",
+                  "&:hover": {
+                    borderColor: "#B01030",
+                    backgroundColor: "rgba(220, 20, 60, 0.04)",
+                  },
+                }}
               >
                 Logout
               </Button>

@@ -86,3 +86,8 @@ export const getHistory = (query, defaultValue = null) => {
     return defaultValue;
   }
 };
+
+/* eslint-disable no-console */
+// Commented out - undefined variable 'action'
+// console.log("History state change", action);
+/* eslint-enable no-console */

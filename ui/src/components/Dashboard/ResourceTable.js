@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { connect, useSelector } from "react-redux";
+import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import numeral from "numeral";
 import MUIDataTable from "mui-datatables";
@@ -52,10 +52,8 @@ const ResourceTable = ({
   isResourceTableLoading,
   addFiltersObject,
   removeFiltersObject,
-  getFlits,
   getCols,
   checkUncheckColumns,
-  getSearchText,
   dispatchSearchText,
 }) => {
   const [headers, setHeaders] = useState([]);
@@ -160,7 +158,7 @@ const ResourceTable = ({
       setHasError(false);
     }
   }, [currentResource, resources]);
-  const [flits, setFlits] = useState({ test: "only" });
+
   return (
     <Fragment>
       {!hasError && isResourceTableLoading && (
@@ -213,7 +211,7 @@ const ResourceTable = ({
               data={currentResourceData}
               columns={headers}
               options={Object.assign(tableOptions, {
-                customSearch: (searchQuery, currentRow, columns) => {
+                customSearch: () => {
                   // You can return your custom icon component here
                   return "EMAIL";
                 },
@@ -291,19 +289,15 @@ ResourceTable.propTypes = {
   addFiltersObject: PropTypes.func,
   removeFiltersObject: PropTypes.func,
   dispatchSearchText: PropTypes.func,
-  getFlits: PropTypes.object,
   getCols: PropTypes.array,
   checkUncheckColumns: PropTypes.func,
-  getSearchText: PropTypes.string,
 };
 const mapStateToProps = (state) => ({
   resources: state.resources.resources,
   currentResourceData: state.resources.currentResourceData,
   currentResource: state.resources.currentResource,
   isResourceTableLoading: state.resources.isResourceTableLoading,
-  getFlits: state.flit,
   getCols: state.cols,
-  getSearchText: state.searchMui,
 });
 const mapDispatchToProps = (dispatch) => ({
   addFiltersObject: (data) => dispatch({ type: "ADD_IN_OBJECT", data }),
