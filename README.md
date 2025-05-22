@@ -63,8 +63,49 @@ This project has recently undergone significant upgrades to modernize its stack 
     *   Updated Material-UI (MUI) to v5.
     *   Migrated to React Router v6.
     *   Upgraded Webpack to v5 and updated related loaders and plugins for a more efficient build process.
+*   **Authentication & Security**:
+    *   Added secure login functionality with JWT-based authentication.
+    *   Implemented protected routes for authenticated users.
+    *   Enhanced API security with authentication middleware.
 *   **Containerization Improvements**: Updated Dockerfiles for both development and production environments, optimizing build layers and improving security by using non-root users and newer base images.
 *   **General Dependency Updates**: Various other packages and dependencies across the project have been updated to their latest stable versions.
+
+## Authentication
+
+Finala now features a secure authentication system to protect access to your cloud resource information.
+
+### Login System
+
+* **User Interface**: A clean, modern login page that matches Finala's visual identity.
+* **API Authentication**: Backend API routes are now protected with JWT authentication.
+* **Protected Routes**: Access to resource data requires successful authentication.
+
+### Configuration
+
+Authentication credentials are configured in `/etc/finala/config.yaml` under the `auth` section:
+
+```yaml
+auth:
+  username: admin
+  password: your-secure-password
+```
+
+### Auto-Generated Credentials
+
+If the configuration file is missing, incomplete, or authentication credentials are not set:
+
+1. The system will use `admin` as the default username.
+2. A secure random password will be automatically generated at startup.
+3. The generated password will be displayed in the startup logs for initial access.
+4. The configuration will be written to `/etc/finala/config.yaml` for future reference.
+
+Example startup log with generated credentials:
+```
+INFO: Generated random password for admin user: XyzT7q2PwC8rLzV5
+INFO: To use custom credentials, set auth.username and auth.password in /etc/finala/config.yaml
+```
+
+For security in production environments, it is recommended to set your own credentials in the configuration file.
 
 ## QuickStart
 
