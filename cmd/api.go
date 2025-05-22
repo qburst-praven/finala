@@ -2,12 +2,14 @@ package cmd
 
 import (
 	"finala/api"
-	"finala/api/config"
+	apiconfig "finala/api/config"
 	"finala/api/storage/meilisearch"
 	"finala/serverutil"
 	"finala/visibility"
 	"os"
 	"os/signal"
+
+	appcfg "finala/config"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -24,8 +26,11 @@ var apiServer = &cobra.Command{
 	Short: "Launch RESTful API",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
+		// Load authentication credentials first
+		appcfg.LoadCredentials("/etc/finala/config.yaml")
+
 		// Loading configuration file
-		configStruct, err := config.LoadAPI(cfgFile)
+		configStruct, err := apiconfig.LoadAPI(cfgFile)
 		if err != nil {
 			log.Error(err)
 			os.Exit(1)

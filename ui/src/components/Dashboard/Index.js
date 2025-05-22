@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import makeStyles from "@mui/styles/makeStyles";
 import { useNavigate } from "react-router-dom";
 import { setHistory } from "../../utils/History";
+import { Button } from "@mui/material";
 
 import PropTypes from "prop-types";
 import FilterBar from "./FilterBar";
@@ -66,6 +67,17 @@ const DashboardIndex = ({
             <ResourceScanning />
           </Grid>
           <Grid item sm={4} xs={12} className={classes.selectorGrid}>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  localStorage.removeItem("finalaAuthToken");
+                  navigate("/login");
+                }}
+              >
+                Logout
+              </Button>
+            </Box>
             <ExecutionIndex />
           </Grid>
         </Grid>

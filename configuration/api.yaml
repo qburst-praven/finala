@@ -12,3 +12,6 @@ smtp:
     password: "gxip gpyj dcvc rdme"
     smtpServer: "smtp.gmail.com"
     smtpPort: 587
+auth:
+  username: "admin"
+  password: "test"

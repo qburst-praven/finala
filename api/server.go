@@ -14,6 +14,7 @@ import (
 	"finala/api/storage"
 	"finala/serverutil"
 	"finala/version"
+	authhandlers "finala/api/handlers"
 )
 
 const (
@@ -33,13 +34,18 @@ type Server struct {
 func NewServer(port int, storage storage.StorageDescriber, version version.VersionManagerDescriptor) *Server {
 
 	router := http.NewServeMux()
-	corsObj := handlers.AllowedOrigins([]string{"*"})
+	// Define more specific CORS options
+	allowedOrigins := handlers.AllowedOrigins([]string{"http://localhost:8080"})
+	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
+	allowedHeaders := handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "X-Requested-With"})
+
 	return &Server{
 		router:  router,
 		storage: storage,
 		version: version,
 		httpserver: &http.Server{
-			Handler: handlers.CORS(corsObj)(router),
+			// Apply the more specific CORS options
+			Handler: handlers.CORS(allowedOrigins, allowedMethods, allowedHeaders)(router),
 			Addr:    fmt.Sprintf("0.0.0.0:%d", port),
 		},
 	}
@@ -87,6 +93,9 @@ func (server *Server) BindEndpoints() {
 	server.router.HandleFunc("POST /api/v1/send-report", server.SendReport)
 	server.router.HandleFunc("GET /api/v1/version", server.VersionHandler)
 	server.router.HandleFunc("GET /api/v1/health", server.HealthCheckHandler)
+
+	// ADDED: Login route
+	server.router.HandleFunc("POST /api/v1/auth/login", authhandlers.LoginHandler)
 
 	// Add a catch-all handler for not found routes
 	server.router.HandleFunc("/", server.NotFoundRoute)
