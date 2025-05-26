@@ -11,9 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// defaultRegionPrice defines the default aws region
-var defaultRegionPrice = "us-east-1"
-
 // ErrRegionNotFound when a region is not found
 var ErrRegionNotFound = errors.New("region was not found as part of the regionsInfo map")
 
