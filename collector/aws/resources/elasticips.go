@@ -2,14 +2,16 @@ package resources
 
 import (
 	"errors"
+	"fmt"
 	"finala/collector"
 	"finala/collector/aws/common"
+	"finala/collector/aws/pricing"
 	"finala/collector/aws/register"
 	"finala/collector/config"
 
 	awsClient "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/aws/aws-sdk-go/service/pricing"
+	awspricing "github.com/aws/aws-sdk-go/service/pricing"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -43,7 +45,6 @@ func init() {
 
 // NewElasticIPManager implements AWS GO SDK
 func NewElasticIPManager(awsManager common.AWSManager, client interface{}) (common.ResourceDetection, error) {
-
 	if client == nil {
 		client = ec2.New(awsManager.GetSession())
 	}
@@ -56,15 +57,14 @@ func NewElasticIPManager(awsManager common.AWSManager, client interface{}) (comm
 	return &ElasticIPManager{
 		client:             ec2Client,
 		awsManager:         awsManager,
-		servicePricingCode: "AmazonEC2",
-		rateCode:           "JTU8TKNAMW",
+		servicePricingCode: "AmazonVPC",
+		rateCode:           "6YS6EN2CT7",
 		Name:               awsManager.GetResourceIdentifier("elastic_ip"),
 	}, nil
 }
 
 // Detect checks if elastic ips is under utilized
 func (ei *ElasticIPManager) Detect(metrics []config.MetricConfig) (interface{}, error) {
-
 	metric := metrics[0]
 
 	log.WithFields(log.Fields{
@@ -98,9 +98,7 @@ func (ei *ElasticIPManager) Detect(metrics []config.MetricConfig) (interface{}, 
 	}
 
 	for _, ip := range ips {
-
 		if ip.PrivateIpAddress == nil && ip.AssociationId == nil && ip.InstanceId == nil && ip.NetworkInterfaceId == nil {
-
 			tagsData := map[string]string{}
 			if err == nil {
 				for _, tag := range ip.Tags {
@@ -123,45 +121,71 @@ func (ei *ElasticIPManager) Detect(metrics []config.MetricConfig) (interface{}, 
 			})
 
 			elasticIPs = append(elasticIPs, eIP)
-
 		}
 	}
 
 	ei.awsManager.GetCollector().CollectFinish(ei.Name)
 
 	return elasticIPs, nil
-
 }
 
 // getPricingFilterInput returns the elastic ip price filters.
-func (ei *ElasticIPManager) getPricingFilterInput() pricing.GetProductsInput {
+func (ei *ElasticIPManager) getPricingFilterInput() awspricing.GetProductsInput {
+	region := ei.awsManager.GetRegion()
+	pricingClient := ei.awsManager.GetPricingClient()
 
-	return pricing.GetProductsInput{
+	regionPrefixForUsageType, err := pricingClient.GetRegionPrefix(region)
+	if err != nil {
+		log.WithError(err).WithFields(log.Fields{
+			"region": region,
+		}).Error("Could not get region prefix for usagetype")
+		return awspricing.GetProductsInput{ServiceCode: &ei.servicePricingCode}
+	}
+
+	// Get region info for location filter
+	regionInfo, found := pricing.RegionsInfo[region]
+	if !found {
+		log.WithField("region", region).Error("Could not get region info for location filter")
+		return awspricing.GetProductsInput{ServiceCode: &ei.servicePricingCode}
+	}
+
+	// The format is regionPrefix + "PublicIPv4:IdleAddress"
+	regionSpecificUsageType := fmt.Sprintf("%sPublicIPv4:IdleAddress", regionPrefixForUsageType)
+	log.WithFields(log.Fields{
+		"region": region,
+		"prefix": regionPrefixForUsageType,
+		"usage_type": regionSpecificUsageType,
+	}).Debug("Constructed usage type for pricing filter")
+
+	return awspricing.GetProductsInput{
 		ServiceCode: &ei.servicePricingCode,
-		Filters: []*pricing.Filter{
+		Filters: []*awspricing.Filter{
 			{
 				Type:  awsClient.String("TERM_MATCH"),
-				Field: awsClient.String("TermType"),
-				Value: awsClient.String("OnDemand"),
-			},
-			{
-				Type:  awsClient.String("TERM_MATCH"),
-				Field: awsClient.String("productFamily"),
-				Value: awsClient.String("IP Address"),
+				Field: awsClient.String("location"),
+				Value: awsClient.String(regionInfo.FullName),
 			},
 			{
 				Type:  awsClient.String("TERM_MATCH"),
 				Field: awsClient.String("group"),
-				Value: awsClient.String("ElasticIP:Address"),
+				Value: awsClient.String("VPCPublicIPv4Address"),
+			},
+			{
+				Type:  awsClient.String("TERM_MATCH"),
+				Field: awsClient.String("usagetype"),
+				Value: awsClient.String(regionSpecificUsageType),
+			},
+			{
+				Type:  awsClient.String("TERM_MATCH"),
+				Field: awsClient.String("termType"),
+				Value: awsClient.String("OnDemand"),
 			},
 		},
 	}
-
 }
 
 // describeAddressess returns list of elastic ips addresses
 func (ei *ElasticIPManager) describeAddressess() ([]*ec2.Address, error) {
-
 	input := &ec2.DescribeAddressesInput{}
 
 	resp, err := ei.client.DescribeAddresses(input)
