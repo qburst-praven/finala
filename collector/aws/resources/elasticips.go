@@ -3,6 +3,7 @@ package resources
 import (
 	"errors"
 	"fmt"
+
 	"finala/collector"
 	"finala/collector/aws/common"
 	"finala/collector/aws/pricing"
@@ -152,8 +153,8 @@ func (ei *ElasticIPManager) getPricingFilterInput() awspricing.GetProductsInput 
 	// The format is regionPrefix + "PublicIPv4:IdleAddress"
 	regionSpecificUsageType := fmt.Sprintf("%sPublicIPv4:IdleAddress", regionPrefixForUsageType)
 	log.WithFields(log.Fields{
-		"region": region,
-		"prefix": regionPrefixForUsageType,
+		"region":     region,
+		"prefix":     regionPrefixForUsageType,
 		"usage_type": regionSpecificUsageType,
 	}).Debug("Constructed usage type for pricing filter")
 

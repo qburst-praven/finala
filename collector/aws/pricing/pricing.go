@@ -11,10 +11,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	// defaultRateCode define the default product rate code form getting the product price
-	defaultRateCode = "6YS6EN2CT7"
-)
+// defaultRegionPrice defines the default aws region
+var defaultRegionPrice = "us-east-1"
 
 // ErrRegionNotFound when a region is not found
 var ErrRegionNotFound = errors.New("region was not found as part of the regionsInfo map")

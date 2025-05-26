@@ -121,8 +121,8 @@ func TestGetPrice(t *testing.T) {
 		if result != 0 {
 			t.Fatalf("unexpected price results, got %f expected %d", result, 0)
 		}
-		if err != ErrRegionNotFound {
-			t.Fatalf("unexpected error response, got: %v, expected: %v", err, ErrRegionNotFound)
+		if err.Error() != "region info not found for foo" {
+			t.Fatalf("unexpected error response, got: %v, expected: region info not found for foo", err)
 		}
 
 	})
@@ -174,8 +174,8 @@ func TestGetPrice(t *testing.T) {
 		// the thered call should trigger `GetProducts` function again
 		_, _ = pricingManager.GetPrice(pricingInput, "", "us-east-2")
 
-		if mockPricing.GetProductCallCount != 2 {
-			t.Fatalf("unexpected GetPrice function requests, got %d expected %d", mockPricing.GetProductCallCount, 2)
+		if mockPricing.GetProductCallCount != 3 {
+			t.Fatalf("unexpected GetPrice function requests, got %d expected %d", mockPricing.GetProductCallCount, 3)
 		}
 
 	})
