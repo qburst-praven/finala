@@ -14,8 +14,17 @@ providers:
         # profile: 
         # role: 
         regions:
-          - ap-south-1
           - us-east-1
+          - ap-south-1
+          - af-south-1
+          - ap-northeast-1
+          - ap-southeast-1
+          - eu-north-1
+          - eu-central-1
+          - eu-west-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
     metrics:
       rds:
         - description: Connection count
@@ -38,6 +47,27 @@ providers:
           constraint:
             operator: "<"
             value: 40
+      elasticache:
+        - description: Connection count
+          enable: true
+          metrics:
+            - name: CurrConnections
+              statistic: Sum
+          period: 24h 
+          start_time: 168h # 24h * 7d
+          constraint:
+            operator: "=="
+            value: 0
+        - description: CPU Utilization
+          enable: true
+          metrics:
+            - name: CPUUtilization
+              statistic: Maximum
+          period: 24h
+          start_time: 168h # 24h * 7d
+          constraint:
+            operator: "<"
+            value: 40     
       elb:
         - description: Request count
           enable: true
@@ -60,9 +90,134 @@ providers:
           constraint:
             operator: "=="
             value: 0    
+      ec2:
+        - description: CPU utilization 
+          enable: true
+          metrics:
+            - name: CPUUtilization
+              statistic: Maximum
+          period: 24h 
+          start_time: 168h # 24h * 7d
+          constraint:
+            operator: "<"
+            value: 40
+      dynamodb:
+        - description: Provisioned read capacity units
+          enable: true
+          metrics:
+            - name: ConsumedReadCapacityUnits
+              statistic: Sum
+            - name: ProvisionedReadCapacityUnits
+              statistic: Average
+          period: 24h 
+          start_time: 168h # 24h * 7d
+          constraint:
+            formula: ( ConsumedReadCapacityUnits / 7 / 86400 ) / ProvisionedReadCapacityUnits * 100
+            operator: "<"
+            value: 80
+        - description: Provisioned write capacity units
+          enable: true
+          metrics:
+            - name: ConsumedWriteCapacityUnits
+              statistic: Sum
+            - name: ProvisionedWriteCapacityUnits
+              statistic: Average
+          period: 24h 
+          start_time: 168h # 24h * 7d
+          constraint:
+            formula: ( ConsumedWriteCapacityUnits / 7 / 86400 ) / ProvisionedWriteCapacityUnits * 100
+            operator: "<"
+            value: 80
+      lambda:
+        - description: Invocations count
+          enable: true
+          metrics:
+            - name: Invocations
+              statistic: Sum
+          period: 24h 
+          start_time: 168h # 24h * 7d
+          constraint:
+            operator: "=="
+            value: 0
+      neptune:
+        - description: Requests gremlin/sparql
+          enable: true
+          metrics:
+            - name: GremlinRequestsPerSec
+              statistic: Sum
+            - name: SparqlRequestsPerSec
+              statistic: Sum
+          period: 24h 
+          start_time: 168h # 24h * 7d
+          constraint:
+            formula: GremlinRequestsPerSec + SparqlRequestsPerSec
+            operator: "=="
+            value: 0
+      kinesis:
+        - description: Total put records
+          enable: true
+          metrics:
+            - name: "PutRecords.Bytes"
+              statistic: Sum
+            - name: "PutRecord.Bytes"
+              statistic: Sum              
+          period: 24h 
+          start_time: 168h # 24h * 7d
+          constraint:
+            # The go module Knetic/govaluate has a built in escaping
+            # https://github.com/Knetic/govaluate#escaping-characters
+            # [PutRecord.Bytes] will escape the parameter name
+            formula: "[PutRecord.Bytes] + [PutRecords.Bytes]"
+            operator: "=="
+            value: 0
+      redshift:
+        - description: Connection count
+          enable: true
+          metrics:
+            - name: DatabaseConnections
+              statistic: Sum
+          period: 24h 
+          start_time: 168h # 24h * 7d
+          constraint:
+            operator: "=="
+            value: 0
+      elasticsearch:
+        - description: "IndexRate + SearchRate"
+          enable: true
+          metrics:
+            - name: IndexingRate
+              statistic: Sum
+            - name: SearchRate
+              statistic: Sum
+          period: 24h 
+          start_time: 168h # 24h * 7d
+          constraint:
+            formula: IndexingRate + SearchRate
+            operator: "=="
+            value: 0
+      iamLastActivity:
+        - description: Last user activity
+          enable: true
+          constraint:
+            operator: ">="
+            value: 90 # 90 Days
       elasticip:
         - description: Not associated
           enable: true
+      ec2_volumes:
+        - description: Not in used
+          enable: true
+      apigateway:
+        - description: API calls
+          enable: true
+          metrics:
+            - name: Count
+              statistic: Sum
+          period: 24h 
+          start_time: 168h # 24h * 7d 
+          constraint:
+            operator: "=="
+            value: 0
       natgateway:
         - description: Active connection count
           enable: true
