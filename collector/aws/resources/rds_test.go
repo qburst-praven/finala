@@ -197,7 +197,6 @@ func TestDetectRDS(t *testing.T) {
 						StorageType:          awsClient.String("gp2"),
 						AllocatedStorage:     awsClient.Int64(3),
 						Engine:               awsClient.String("postgres"),
-						EngineVersion:        awsClient.String("13.3"),
 						InstanceCreateTime:   testutils.TimePointer(time.Now()),
 					},
 				},
