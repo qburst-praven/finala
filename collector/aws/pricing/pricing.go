@@ -26,7 +26,7 @@ var RegionsInfo = map[string]RegionInfo{
 	"us-west-1":      {FullName: "US West (N. California)", Prefix: "USW1"},
 	"us-west-2":      {FullName: "US West (Oregon)", Prefix: "USW2"},
 	"ap-east-1":      {FullName: "Asia Pacific (Hong Kong)", Prefix: "APE1"},
-	"ap-south-1":     {FullName: "Asia Pacific (Mumbai)", Prefix: ""},
+	"ap-south-1":     {FullName: "Asia Pacific (Mumbai)", Prefix: "APS3"},
 	"ap-northeast-3": {FullName: "Asia Pacific (Osaka-Local)", Prefix: "APN3"},
 	"ap-northeast-2": {FullName: "Asia Pacific (Seoul)", Prefix: "APN2"},
 	"ap-southeast-1": {FullName: "Asia Pacific (Singapore)", Prefix: "APS1"},
@@ -123,8 +123,39 @@ func (p *PricingManager) GetPrice(filters awsPricing.GetProductsInput, rateCode 
 		return 0, err
 	}
 
-	if len(products.PriceList) == 0 {
-		return 0, fmt.Errorf("no products found for the given filters")
+	if len(products.PriceList) != 1 {
+		// Log details about each product when we get multiple results
+		filterMap := make(map[string]string)
+		for _, filter := range filters.Filters {
+			// Ensure filter.Field and filter.Value are not nil before dereferencing
+			if filter.Field != nil && filter.Value != nil {
+				filterMap[*filter.Field] = *filter.Value
+			}
+		}
+		for i, product := range products.PriceList {
+			productStr, err := json.Marshal(product)
+			logFields := log.Fields{
+				"product_index": i,
+				"filters":       filterMap,
+			}
+			if filters.ServiceCode != nil {
+				logFields["service_code"] = *filters.ServiceCode
+			}
+
+			if err != nil {
+				log.WithError(err).WithFields(logFields).Error("Could not encode product to JSON")
+				continue
+			}
+			// Add product_json to logFields after successful Marshal
+			logFields["product_json"] = string(productStr)
+			log.WithFields(logFields).Info("Multiple products found - product details")
+		}
+
+		log.WithFields(log.Fields{
+			"search_query": filters,
+			"products":     len(products.PriceList),
+		}).Error("Price list response should be equal to 1 product")
+		return 0, errors.New("Price list response should be equal only to 1 product")
 	}
 
 	// Get the first product

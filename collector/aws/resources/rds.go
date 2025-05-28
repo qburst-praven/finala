@@ -232,7 +232,9 @@ func (r *RDSManager) getHourlyStoragePrice(instance *rds.DBInstance, pricingRegi
 		var storagePricingFilters pricing.GetProductsInput
 		switch *instance.Engine {
 		case "aurora", "aurora-mysql", "aurora-postgresql":
-			storagePricingFilters = r.getPricingAuroraStorageFilterInput(rdsStorageType, pricingRegionPrefix)
+			// Determine the specific Aurora database engine for accurate storage pricing filters
+			specificAuroraEngine := r.getPricingDatabaseEngine(instance)
+			storagePricingFilters = r.getPricingAuroraStorageFilterInput(rdsStorageType, pricingRegionPrefix, specificAuroraEngine)
 		default:
 			deploymentOption := r.getPricingDeploymentOption(instance)
 			storagePricingFilters = r.getPricingRDSStorageFilterInput(instance, rdsStorageType, deploymentOption)
@@ -259,25 +261,55 @@ func (r *RDSManager) getPricingInstanceFilterInput(instance *rds.DBInstance) pri
 	databaseEngine := r.getPricingDatabaseEngine(instance)
 	deploymentOption := r.getPricingDeploymentOption(instance)
 
+	filters := []*pricing.Filter{
+		{
+			Type:  awsClient.String("TERM_MATCH"),
+			Field: awsClient.String("databaseEngine"),
+			Value: &databaseEngine,
+		},
+		{
+			Type:  awsClient.String("TERM_MATCH"),
+			Field: awsClient.String("instanceType"),
+			Value: instance.DBInstanceClass,
+		},
+		{
+			Type:  awsClient.String("TERM_MATCH"),
+			Field: awsClient.String("deploymentOption"),
+			Value: &deploymentOption,
+		},
+	}
+
+	// If the engine is Aurora PostgreSQL, add a filter for storage type to differentiate
+	// between standard and I/O optimized pricing. We default to "EBS Only" which
+	// corresponds to the standard, non-I/O-optimized pricing.
+	if databaseEngine == "Aurora PostgreSQL" {
+		storageValue := "EBS Only"
+		filters = append(filters, &pricing.Filter{
+			Type:  awsClient.String("TERM_MATCH"),
+			Field: awsClient.String("storage"),
+			Value: awsClient.String(storageValue),
+		})
+	}
+
+	logFields := log.Fields{
+		"database_engine":   databaseEngine,
+		"deployment_option": deploymentOption,
+		"all_filters":       filters,
+	}
+	if instance.DBInstanceClass != nil {
+		logFields["instance_type"] = *instance.DBInstanceClass
+	}
+	if instance.StorageType != nil {
+		logFields["instance_storage"] = *instance.StorageType
+	}
+	if instance.EngineVersion != nil {
+		logFields["instance_engine_ver"] = *instance.EngineVersion
+	}
+	log.WithFields(logFields).Debug("RDS instance details and pricing filters")
+
 	return pricing.GetProductsInput{
 		ServiceCode: &r.servicePricingCode,
-		Filters: []*pricing.Filter{
-			{
-				Type:  awsClient.String("TERM_MATCH"),
-				Field: awsClient.String("databaseEngine"),
-				Value: &databaseEngine,
-			},
-			{
-				Type:  awsClient.String("TERM_MATCH"),
-				Field: awsClient.String("instanceType"),
-				Value: instance.DBInstanceClass,
-			},
-			{
-				Type:  awsClient.String("TERM_MATCH"),
-				Field: awsClient.String("deploymentOption"),
-				Value: &deploymentOption,
-			},
-		},
+		Filters:     filters,
 	}
 }
 
@@ -344,27 +376,52 @@ func (r *RDSManager) getPricingRDSStorageFilterInput(instance *rds.DBInstance, r
 }
 
 // getPricingAuroraStorageFilterInput will set the right filters for Aurora Storage
-func (r *RDSManager) getPricingAuroraStorageFilterInput(rdsStorageType string, pricingRegionPrefix string) pricing.GetProductsInput {
+func (r *RDSManager) getPricingAuroraStorageFilterInput(rdsStorageType string, pricingRegionPrefix string, specificDatabaseEngine string) pricing.GetProductsInput {
+	var filters []*pricing.Filter
+
+	filters = []*pricing.Filter{
+		{
+			Type:  awsClient.String("TERM_MATCH"),
+			Field: awsClient.String("volumeType"),
+			Value: awsClient.String(rdsStorageType),
+		},
+	}
+
+	// For regions with no pricing prefix (e.g., Mumbai, where pricingRegionPrefix is ""),
+	// we must use the specific database engine to differentiate Aurora storage types (PostgreSQL vs MySQL).
+	if pricingRegionPrefix == "" {
+		log.WithFields(log.Fields{
+			"volumeType":             rdsStorageType,
+			"region_prefix":          pricingRegionPrefix,
+			"specificDatabaseEngine": specificDatabaseEngine,
+		}).Info("Using specific database engine for Aurora storage pricing in this region without a prefix.")
+		filters = append(filters, &pricing.Filter{
+			Type:  awsClient.String("TERM_MATCH"),
+			Field: awsClient.String("databaseEngine"),
+			Value: awsClient.String(specificDatabaseEngine), // e.g., "Aurora PostgreSQL" or "Aurora MySQL"
+		})
+	} else {
+		// For regions WITH a pricing prefix, the established pattern is databaseEngine: "Any"
+		// and a prefixed usagetype.
+		log.WithFields(log.Fields{
+			"volumeType":    rdsStorageType,
+			"region_prefix": pricingRegionPrefix,
+		}).Info("Using 'Any' database engine and prefixed usagetype for Aurora storage in this region with a prefix.")
+		filters = append(filters, &pricing.Filter{
+			Type:  awsClient.String("TERM_MATCH"),
+			Field: awsClient.String("databaseEngine"),
+			Value: awsClient.String("Any"),
+		})
+		filters = append(filters, &pricing.Filter{
+			Type:  awsClient.String("TERM_MATCH"),
+			Field: awsClient.String("usagetype"),
+			Value: awsClient.String(fmt.Sprintf("%sAurora:StorageUsage", pricingRegionPrefix)),
+		})
+	}
 
 	return pricing.GetProductsInput{
 		ServiceCode: &r.servicePricingCode,
-		Filters: []*pricing.Filter{
-			{
-				Type:  awsClient.String("TERM_MATCH"),
-				Field: awsClient.String("volumeType"),
-				Value: awsClient.String(rdsStorageType),
-			},
-			{
-				Type:  awsClient.String("TERM_MATCH"),
-				Field: awsClient.String("databaseEngine"),
-				Value: awsClient.String("Any"),
-			},
-			{
-				Type:  awsClient.String("TERM_MATCH"),
-				Field: awsClient.String("usagetype"),
-				Value: awsClient.String(fmt.Sprintf("%sAurora:StorageUsage", pricingRegionPrefix)),
-			},
-		},
+		Filters:     filters,
 	}
 }
 

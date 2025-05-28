@@ -57,6 +57,16 @@ var loadBalancersConfig = map[string]loadBalancerConfig{
 				Field: awsClient.String("productFamily"),
 				Value: awsClient.String("Load Balancer-Application"),
 			},
+			{
+				Type:  awsClient.String("TERM_MATCH"),
+				Field: awsClient.String("locationType"),
+				Value: awsClient.String("AWS Region"),
+			},
+			{
+				Type:  awsClient.String("TERM_MATCH"),
+				Field: awsClient.String("operation"),
+				Value: awsClient.String("LoadBalancing:Application"),
+			},
 		},
 	},
 	"network": {
@@ -66,6 +76,16 @@ var loadBalancersConfig = map[string]loadBalancerConfig{
 				Type:  awsClient.String("TERM_MATCH"),
 				Field: awsClient.String("productFamily"),
 				Value: awsClient.String("Load Balancer-Network"),
+			},
+			{
+				Type:  awsClient.String("TERM_MATCH"),
+				Field: awsClient.String("locationType"),
+				Value: awsClient.String("AWS Region"),
+			},
+			{
+				Type:  awsClient.String("TERM_MATCH"),
+				Field: awsClient.String("operation"),
+				Value: awsClient.String("LoadBalancing:Network"),
 			},
 		},
 	},
@@ -132,13 +152,16 @@ func (el *ELBV2Manager) Detect(metrics []config.MetricConfig) (interface{}, erro
 
 			log.WithField("name", *instance.LoadBalancerName).Debug("checking elbV2")
 
-			loadBalancerConfig.pricingfilters = append(
-				loadBalancerConfig.pricingfilters, &pricing.Filter{
+			currentPricingFilters := []*pricing.Filter{}
+			currentPricingFilters = append(currentPricingFilters, loadBalancerConfig.pricingfilters...)
+
+			currentPricingFilters = append(
+				currentPricingFilters, &pricing.Filter{
 					Type:  awsClient.String("TERM_MATCH"),
 					Field: awsClient.String("usagetype"),
 					Value: awsClient.String(fmt.Sprintf("%sLoadBalancerUsage", pricingRegionPrefix)),
 				})
-			price, _ = el.awsManager.GetPricingClient().GetPrice(el.getPricingFilterInput(loadBalancerConfig.pricingfilters), "", el.awsManager.GetRegion())
+			price, _ = el.awsManager.GetPricingClient().GetPrice(el.getPricingFilterInput(currentPricingFilters), "", el.awsManager.GetRegion())
 		}
 		for _, metric := range metrics {
 
