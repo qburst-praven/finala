@@ -1,208 +1,144 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
-import { titleDirective } from "../../utils/Title";
-import { MoneyDirective } from "../../utils/Money";
-import {
-  Box,
-  Card,
-  CardContent,
-  Grid,
-  Typography,
-  LinearProgress,
-  Tooltip,
-} from "@mui/material";
+import { Grid, Card, CardContent, Typography, Tooltip } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
+import moment from "moment";
+import { MoneyDirective } from "../../utils/Money";
 
 const useStyles = makeStyles(() => ({
-  unused: {
-    fontSize: "42px",
-    color: "orangered",
-    fontFamily: "MuseoModerno",
-    minHeight: "63px",
+  statCard: {
+    background: "#ffffff",
+    border: "1px solid #e2e8f0",
+    borderRadius: "8px",
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.06)",
+    transition: "all 0.2s ease",
+    cursor: "default",
+    "&:hover": {
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+      transform: "translateY(-1px)",
+      borderColor: "#cbd5e0",
+    },
   },
-  unused_daily: {
-    fontSize: "42px",
-    color: "purple",
-    fontFamily: "MuseoModerno",
-    minHeight: "63px",
-  },
-  unused_resource: {
-    fontSize: "42px",
-    color: "darkgreen",
-    fontFamily: "Nunito",
-    fontWeight: "400",
-    minHeight: "63px",
-  },
-  middleGrid: {
-    textAlign: "center",
-    borderLeft: "1px dashed #c1c1c1",
-    borderRight: "1px dashed #c1c1c1",
-  },
-  grid: {
+  statContent: {
+    padding: "20px 16px !important",
     textAlign: "center",
   },
-  progress: {
-    margin: "30px",
+  statTitle: {
+    fontSize: "0.85rem",
+    fontWeight: "800",
+    color: "#DC143C",
+    marginBottom: "12px",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+  },
+  statValue: {
+    fontSize: "2.5rem",
+    fontWeight: "700",
+    fontFamily: "MuseoModerno",
+    lineHeight: "1.1",
+    minHeight: "60px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  monthlyValue: {
+    color: "#059669",
+  },
+  dailyValue: {
+    color: "#7c3aed",
+  },
+  unusedValue: {
+    color: "#dc2626",
+  },
+  optimizationsValue: {
+    color: "#1e40af",
   },
 }));
 
-/**
- * @param  {array} {resources  Resources List
- * @param  {bool} isResourceListLoading  isLoading indicator for resources
- * @param  {func} currentResource  Current Selected Resource
- */
-const StatisticsBar = ({
-  resources,
-  isResourceListLoading,
-  currentResource,
-}) => {
+const StatisticsBar = ({ resources }) => {
   const classes = useStyles();
 
-  let HighestResourceName = "";
-  let HighestResourceValue = 0;
-  let TotalUnusedResourcesCount = 0;
-  
-  const TotalSpent = Object.values(resources).reduce((acc, resource) => {
-    let TotalSpent = resource.TotalSpent;
+  const collectors = Object.values(resources || {});
 
-    if (currentResource && currentResource !== resource.ResourceName) {
-      TotalSpent = 0;
-    }
-
-    if (resource.TotalSpent > HighestResourceValue) {
-      HighestResourceValue = resource.TotalSpent;
-      HighestResourceName = resource.ResourceName;
-    }
-
-    // Count unused resources (resources without pricing)
-    if (resource.TotalSpent === 0) {
-      TotalUnusedResourcesCount += resource.ResourceCount || 0;
-    }
-
-    return acc + TotalSpent;
+  const totalSpent = collectors.reduce((sum, collector) => {
+    return sum + (collector.TotalSpent || 0);
   }, 0);
 
-  const DailySpent = TotalSpent / 30;
+  const dailySpent = totalSpent / 30;
+
+  const totalUnusedResources = collectors
+    .filter((collector) => 
+      collector.Category === "unused_resource" || 
+      (!collector.TotalSpent || collector.TotalSpent === 0)
+    )
+    .reduce((sum, collector) => sum + (collector.ResourceCount || 0), 0);
+
+  const totalOptimizations = collectors
+    .filter((collector) => 
+      collector.Category === "potential_cost_saving" || 
+      (collector.TotalSpent && collector.TotalSpent > 0)
+    )
+    .reduce((sum, collector) => sum + (collector.ResourceCount || 0), 0);
+
+  const statistics = [
+    {
+      title: "💰 Monthly potential savings",
+      value: MoneyDirective(totalSpent),
+      tooltip: "Total monthly cost that could be saved by optimizing identified resources",
+      className: classes.monthlyValue,
+    },
+    {
+      title: "📅 Daily potential savings", 
+      value: MoneyDirective(dailySpent),
+      tooltip: "Daily cost savings you can achieve by optimizing unused resources",
+      className: classes.dailyValue,
+    },
+    {
+      title: "🎯 Cost Optimizations",
+      value: totalOptimizations.toLocaleString(),
+      tooltip: "Number of resources with potential cost savings",
+      className: classes.optimizationsValue,
+    },
+    {
+      title: "🗑️ Unused Resources",
+      value: totalUnusedResources.toLocaleString(),
+      tooltip: "Number of resources without costs that can be removed",
+      className: classes.unusedValue,
+    },
+  ];
 
   return (
-    <Fragment>
-      <Box mb={3}>
-        <Card>
-          <CardContent>
-            <Grid container className={classes.root} spacing={2}>
-              <Grid item sm={3} xs={12} className={classes.grid}>
-                <Tooltip title="Monthly potential cost savings from unused resources with pricing">
-                  <div>
-                    {isResourceListLoading && (
-                      <LinearProgress className={classes.progress} />
-                    )}
-                    {!isResourceListLoading && (
-                      <Typography
-                        variant="inherit"
-                        sx={{
-                          fontSize: "42px",
-                          color: "orangered",
-                          fontFamily: "MuseoModerno",
-                          minHeight: "63px",
-                        }}
-                      >
-                        {MoneyDirective(TotalSpent)}
-                      </Typography>
-                    )}
-                    <Typography>💰 Monthly potential savings</Typography>
-                  </div>
-                </Tooltip>
-              </Grid>
-              <Grid item sm={3} xs={12} className={classes.middleGrid}>
-                <Tooltip title="Daily cost savings you can achieve by optimizing unused resources">
-                  <div>
-                    {isResourceListLoading && (
-                      <LinearProgress className={classes.progress} />
-                    )}
-                    {!isResourceListLoading && (
-                      <Typography
-                        variant="inherit"
-                        sx={{
-                          fontSize: "42px",
-                          color: "purple",
-                          fontFamily: "MuseoModerno",
-                          minHeight: "63px",
-                        }}
-                      >
-                        {MoneyDirective(DailySpent)}
-                      </Typography>
-                    )}
-                    <Typography>📅 Daily potential savings</Typography>
-                  </div>
-                </Tooltip>
-              </Grid>
-              <Grid item sm={3} xs={12} className={classes.middleGrid}>
-                <Tooltip title="Number of unused resources that can be removed (no cost impact but improves security)">
-                  <div>
-                    {isResourceListLoading && (
-                      <LinearProgress className={classes.progress} />
-                    )}
-                    {!isResourceListLoading && (
-                      <Typography
-                        variant="inherit"
-                        sx={{
-                          fontSize: "42px",
-                          color: "#4caf50",
-                          fontFamily: "MuseoModerno",
-                          minHeight: "63px",
-                        }}
-                      >
-                        {TotalUnusedResourcesCount}
-                      </Typography>
-                    )}
-                    <Typography>🗑️ Unused resources</Typography>
-                  </div>
-                </Tooltip>
-              </Grid>
-              <Grid item sm={3} xs={12} className={classes.grid}>
-                {isResourceListLoading && (
-                  <LinearProgress className={classes.progress} />
-                )}
-                {!isResourceListLoading && (
-                  <Typography
-                    variant="inherit"
-                    sx={{
-                      fontSize: "42px",
-                      color: "darkgreen",
-                      fontFamily: "Nunito",
-                      fontWeight: "400",
-                      minHeight: "63px",
-                    }}
-                  >
-                    {titleDirective(HighestResourceName).toUpperCase()}
-                  </Typography>
-                )}
-                <Typography>🎯 Highest cost resource</Typography>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      </Box>
-    </Fragment>
+    <Grid container spacing={2} style={{ marginBottom: "24px" }}>
+      {statistics.map((stat, index) => (
+        <Grid item xs={12} sm={6} md={3} key={index}>
+          <Tooltip title={stat.tooltip} arrow>
+            <Card className={classes.statCard}>
+              <CardContent className={classes.statContent}>
+                <Typography className={classes.statTitle}>
+                  {stat.title}
+                </Typography>
+                <Typography 
+                  className={`${classes.statValue} ${stat.className}`}
+                  style={{
+                    fontSize: "48px",
+                    fontWeight: "700",
+                    fontFamily: "MuseoModerno",
+                    minHeight: "70px",
+                  }}
+                >
+                  {stat.value}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Tooltip>
+        </Grid>
+      ))}
+    </Grid>
   );
-};
-
-StatisticsBar.defaultProps = {};
-StatisticsBar.propTypes = {
-  isScanning: PropTypes.bool,
-  isResourceListLoading: PropTypes.bool,
-  currentResource: PropTypes.string,
-  resources: PropTypes.object,
-  filters: PropTypes.array,
 };
 
 const mapStateToProps = (state) => ({
   resources: state.resources.resources,
-  filters: state.filters.filters,
-  isResourceListLoading: state.resources.isResourceListLoading,
-  currentResource: state.resources.currentResource,
 });
-const mapDispatchToProps = () => ({});
 
-export default connect(mapStateToProps, mapDispatchToProps)(StatisticsBar);
+export default connect(mapStateToProps)(StatisticsBar);

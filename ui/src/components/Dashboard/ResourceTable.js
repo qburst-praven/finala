@@ -43,6 +43,37 @@ const useStyles = makeStyles(() => ({
   progress: {
     margin: "30px",
   },
+  categoryBanner: {
+    backgroundColor: "#f8fafc",
+    border: "1px solid #e2e8f0",
+    borderRadius: "6px",
+    padding: "12px 16px",
+    marginBottom: "16px",
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    fontWeight: "500",
+    fontSize: "0.9rem",
+    transition: "background-color 0.2s ease",
+  },
+  costSavingBanner: {
+    borderLeftColor: "#d69e2e",
+    borderLeftWidth: "4px",
+    color: "#975a16",
+    backgroundColor: "#fffbeb",
+    "&:hover": {
+      backgroundColor: "#fef3c7",
+    },
+  },
+  unusedBanner: {
+    borderLeftColor: "#38a169",
+    borderLeftWidth: "4px", 
+    color: "#22543d",
+    backgroundColor: "#f0fff4",
+    "&:hover": {
+      backgroundColor: "#c6f6d5",
+    },
+  },
 }));
 
 /**
@@ -213,56 +244,19 @@ const ResourceTable = ({
           <div id="resourcewrap">
             {/* Category Indicator */}
             {currentResource && resources[currentResource] && (
-              <Box mb={2}>
-                <Card style={{ backgroundColor: "#f8f9fa" }}>
-                  <CardContent style={{ padding: "16px" }}>
-                    {resources[currentResource].TotalSpent > 0 ? (
-                      <Typography
-                        variant="h6"
-                        style={{
-                          color: "#ff6b35",
-                          fontWeight: "bold",
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        💰 Potential Cost Saving Resource
-                        <span
-                          style={{
-                            marginLeft: "10px",
-                            fontSize: "14px",
-                            fontWeight: "normal",
-                            color: "#666",
-                          }}
-                        >
-                          (Resources with pricing data that can save you money)
-                        </span>
-                      </Typography>
-                    ) : (
-                      <Typography
-                        variant="h6"
-                        style={{
-                          color: "#4caf50",
-                          fontWeight: "bold",
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        🗑️ Unused Resource
-                        <span
-                          style={{
-                            marginLeft: "10px",
-                            fontSize: "14px",
-                            fontWeight: "normal",
-                            color: "#666",
-                          }}
-                        >
-                          (Resources without pricing that can be removed to improve security)
-                        </span>
-                      </Typography>
-                    )}
-                  </CardContent>
-                </Card>
+              <Box
+                className={`${classes.categoryBanner} ${
+                  resources[currentResource].TotalSpent > 0 
+                    ? classes.costSavingBanner 
+                    : classes.unusedBanner
+                }`}
+              >
+                <Typography>
+                  {resources[currentResource].TotalSpent > 0 
+                    ? "💰 Potential Cost Saving Resource"
+                    : "🗑️ Unused Resource"
+                  }
+                </Typography>
               </Box>
             )}
             {/* {"GET FLITES object :-" + JSON.stringify(getFlits, null, 2)}

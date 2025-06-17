@@ -1,7 +1,11 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import colors from "./colors.json";
+// Use same colors as ResourcesList filter buttons
+const colors = [
+  "#3f51b5", "#f44336", "#ff9800", "#4caf50", "#9c27b0",
+  "#e91e63", "#00bcd4", "#795548", "#607d8b", "#ff5722"
+];
 import Chart from "react-apexcharts";
 import { titleDirective } from "../../utils/Title";
 import { MoneyDirective } from "../../utils/Money";
@@ -44,7 +48,7 @@ const ResourcesChart = ({
 }) => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const colorList = colors.map((color) => color.hex);
+  const colorList = colors;
   const sortedResources = Object.values(resources)
     .filter((row) => row.TotalSpent > 0)
     .sort((a, b) => (a.TotalSpent >= b.TotalSpent ? -1 : 1));
