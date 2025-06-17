@@ -10,7 +10,13 @@ import { getHistory } from "../../utils/History";
 import { useTableFilters } from "../../Hooks/TableHooks";
 import CustomToolbar from "./CustomToolbar";
 
-import { Card, CardContent, LinearProgress } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  LinearProgress,
+  Box,
+  Typography,
+} from "@mui/material";
 
 import makeStyles from "@mui/styles/makeStyles";
 
@@ -205,6 +211,60 @@ const ResourceTable = ({
         currentResourceData.length > 0 &&
         !isResourceTableLoading && (
           <div id="resourcewrap">
+            {/* Category Indicator */}
+            {currentResource && resources[currentResource] && (
+              <Box mb={2}>
+                <Card style={{ backgroundColor: "#f8f9fa" }}>
+                  <CardContent style={{ padding: "16px" }}>
+                    {resources[currentResource].TotalSpent > 0 ? (
+                      <Typography
+                        variant="h6"
+                        style={{
+                          color: "#ff6b35",
+                          fontWeight: "bold",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        💰 Potential Cost Saving Resource
+                        <span
+                          style={{
+                            marginLeft: "10px",
+                            fontSize: "14px",
+                            fontWeight: "normal",
+                            color: "#666",
+                          }}
+                        >
+                          (Resources with pricing data that can save you money)
+                        </span>
+                      </Typography>
+                    ) : (
+                      <Typography
+                        variant="h6"
+                        style={{
+                          color: "#4caf50",
+                          fontWeight: "bold",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        🗑️ Unused Resource
+                        <span
+                          style={{
+                            marginLeft: "10px",
+                            fontSize: "14px",
+                            fontWeight: "normal",
+                            color: "#666",
+                          }}
+                        >
+                          (Resources without pricing that can be removed to improve security)
+                        </span>
+                      </Typography>
+                    )}
+                  </CardContent>
+                </Card>
+              </Box>
+            )}
             {/* {"GET FLITES object :-" + JSON.stringify(getFlits, null, 2)}
           {"GET cols array:-" + JSON.stringify(getCols, null, 2)} */}
             <MUIDataTable

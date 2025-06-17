@@ -61,6 +61,8 @@ const StatisticsBar = ({
 
   let HighestResourceName = "";
   let HighestResourceValue = 0;
+  let TotalUnusedResourcesCount = 0;
+  
   const TotalSpent = Object.values(resources).reduce((acc, resource) => {
     let TotalSpent = resource.TotalSpent;
 
@@ -71,6 +73,11 @@ const StatisticsBar = ({
     if (resource.TotalSpent > HighestResourceValue) {
       HighestResourceValue = resource.TotalSpent;
       HighestResourceName = resource.ResourceName;
+    }
+
+    // Count unused resources (resources without pricing)
+    if (resource.TotalSpent === 0) {
+      TotalUnusedResourcesCount += resource.ResourceCount || 0;
     }
 
     return acc + TotalSpent;
@@ -84,8 +91,8 @@ const StatisticsBar = ({
         <Card>
           <CardContent>
             <Grid container className={classes.root} spacing={2}>
-              <Grid item sm={4} xs={12} className={classes.grid}>
-                <Tooltip title="Monthly Unused resources are effected from filters ">
+              <Grid item sm={3} xs={12} className={classes.grid}>
+                <Tooltip title="Monthly potential cost savings from unused resources with pricing">
                   <div>
                     {isResourceListLoading && (
                       <LinearProgress className={classes.progress} />
@@ -103,12 +110,12 @@ const StatisticsBar = ({
                         {MoneyDirective(TotalSpent)}
                       </Typography>
                     )}
-                    <Typography>Monthly unused resources</Typography>
+                    <Typography>💰 Monthly potential savings</Typography>
                   </div>
                 </Tooltip>
               </Grid>
-              <Grid item sm={4} xs={12} className={classes.middleGrid}>
-                <Tooltip title="Daily waste is the amount you pay daily for unused resources and can be saved">
+              <Grid item sm={3} xs={12} className={classes.middleGrid}>
+                <Tooltip title="Daily cost savings you can achieve by optimizing unused resources">
                   <div>
                     {isResourceListLoading && (
                       <LinearProgress className={classes.progress} />
@@ -126,11 +133,34 @@ const StatisticsBar = ({
                         {MoneyDirective(DailySpent)}
                       </Typography>
                     )}
-                    <Typography>Daily waste</Typography>
+                    <Typography>📅 Daily potential savings</Typography>
                   </div>
                 </Tooltip>
               </Grid>
-              <Grid item sm={4} xs={12} className={classes.grid}>
+              <Grid item sm={3} xs={12} className={classes.middleGrid}>
+                <Tooltip title="Number of unused resources that can be removed (no cost impact but improves security)">
+                  <div>
+                    {isResourceListLoading && (
+                      <LinearProgress className={classes.progress} />
+                    )}
+                    {!isResourceListLoading && (
+                      <Typography
+                        variant="inherit"
+                        sx={{
+                          fontSize: "42px",
+                          color: "#4caf50",
+                          fontFamily: "MuseoModerno",
+                          minHeight: "63px",
+                        }}
+                      >
+                        {TotalUnusedResourcesCount}
+                      </Typography>
+                    )}
+                    <Typography>🗑️ Unused resources</Typography>
+                  </div>
+                </Tooltip>
+              </Grid>
+              <Grid item sm={3} xs={12} className={classes.grid}>
                 {isResourceListLoading && (
                   <LinearProgress className={classes.progress} />
                 )}
@@ -148,7 +178,7 @@ const StatisticsBar = ({
                     {titleDirective(HighestResourceName).toUpperCase()}
                   </Typography>
                 )}
-                <Typography>Most unused resource</Typography>
+                <Typography>🎯 Highest cost resource</Typography>
               </Grid>
             </Grid>
           </CardContent>

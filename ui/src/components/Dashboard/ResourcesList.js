@@ -37,37 +37,46 @@ const useStyles = makeStyles(() => ({
 const ResourcesList = ({ resources, filters, addFilter, setResource }) => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const resourcesList = Object.values(resources)
-    .sort((a, b) => {
-      // Primary sort: TotalSpent descending
-      if (a.TotalSpent > b.TotalSpent) {
-        return -1;
-      }
-      if (a.TotalSpent < b.TotalSpent) {
-        return 1;
-      }
-
-      // Secondary sort: ResourceCount descending
-      // Ensure ResourceCount exists, default to 0 if not
-      const countA = a.ResourceCount || 0;
-      const countB = b.ResourceCount || 0;
-      if (countA > countB) {
-        return -1;
-      }
-      if (countA < countB) {
-        return 1;
-      }
-
-      return 0;
-    })
-    .map((resource) => {
-      const title = titleDirective(resource.ResourceName);
-      const amount = MoneyDirective(resource.TotalSpent);
+  
+  // Separate resources into two categories
+  const potentialCostSavingResources = [];
+  const unusedResources = [];
+  
+  Object.values(resources).forEach((resource) => {
+    const title = titleDirective(resource.ResourceName);
+    const amount = MoneyDirective(resource.TotalSpent);
+    
+    // Determine category based on pricing data
+    const hasPricing = resource.TotalSpent > 0;
+    
+    if (hasPricing) {
       resource.title = `${title} (${amount} / ${resource.ResourceCount})`;
       resource.display_title = `${title}`;
+      potentialCostSavingResources.push(resource);
+    } else {
+      resource.title = `${title} (${resource.ResourceCount} resources)`;
+      resource.display_title = `${title}`;
+      unusedResources.push(resource);
+    }
+  });
 
-      return resource;
-    });
+  // Sort Potential Cost Saving resources by TotalSpent (descending)
+  potentialCostSavingResources.sort((a, b) => {
+    if (a.TotalSpent > b.TotalSpent) return -1;
+    if (a.TotalSpent < b.TotalSpent) return 1;
+    const countA = a.ResourceCount || 0;
+    const countB = b.ResourceCount || 0;
+    return countB - countA;
+  });
+
+  // Sort Unused resources by ResourceCount (descending)
+  unusedResources.sort((a, b) => {
+    const countA = a.ResourceCount || 0;
+    const countB = b.ResourceCount || 0;
+    if (countA > countB) return -1;
+    if (countA < countB) return 1;
+    return 0;
+  });
 
   /**
    *
@@ -89,15 +98,48 @@ const ResourcesList = ({ resources, filters, addFilter, setResource }) => {
 
   return (
     <Fragment>
-      {resourcesList.length > 0 && (
+      {/* Potential Cost Saving Resources Section */}
+      {potentialCostSavingResources.length > 0 && (
         <Box mb={3}>
-          <h4 className={classes.title}>Resources:</h4>
-          {resourcesList.map((resource, i) => {
+          <h4 className={classes.title} style={{ color: "#ff6b35" }}>
+            💰 Potential Cost Saving Resources:
+          </h4>
+          <p style={{ fontSize: "14px", color: "#666", marginTop: "5px" }}>
+            Resources with pricing data that can save you money
+          </p>
+          {potentialCostSavingResources.map((resource, i) => {
             const chipColor =
-              colors[i] && colors[i].hex ? colors[i].hex : "#cccccc";
+              colors[i] && colors[i].hex ? colors[i].hex : "#ff6b35";
             return (
               <Chip
-                key={i}
+                key={`cost-saving-${i}`}
+                className={classes.resource_chips}
+                label={resource.title}
+                onClick={() => setSelectedResource(resource)}
+                style={{
+                  borderLeft: `5px solid ${chipColor}`,
+                  borderBottom: `2px solid ${chipColor}`,
+                }}
+              />
+            );
+          })}
+        </Box>
+      )}
+
+      {/* Unused Resources Section */}
+      {unusedResources.length > 0 && (
+        <Box mb={3}>
+          <h4 className={classes.title} style={{ color: "#4caf50" }}>
+            🗑️ Unused Resources:
+          </h4>
+          <p style={{ fontSize: "14px", color: "#666", marginTop: "5px" }}>
+            Resources without pricing that can be removed to improve security and management
+          </p>
+          {unusedResources.map((resource, i) => {
+            const chipColor = "#4caf50"; // Green color for unused resources
+            return (
+              <Chip
+                key={`unused-${i}`}
                 className={classes.resource_chips}
                 label={resource.title}
                 onClick={() => setSelectedResource(resource)}

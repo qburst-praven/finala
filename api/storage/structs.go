@@ -39,6 +39,8 @@ type CollectorsSummary struct {
 	Status        int     `json:"Status"`
 	ErrorMessage  string  `json:"ErrorMessage"`
 	EventTime     int64   `json:"-"`
+	HasPricing    bool    `json:"HasPricing"`
+	Category      string  `json:"Category"`
 }
 
 type SummaryData struct {

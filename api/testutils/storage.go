@@ -35,14 +35,18 @@ func (ms *MockStorage) GetSummary(executionID string, filters map[string]string)
 			Status:        1,
 			ErrorMessage:  "description",
 			EventTime:     123456,
+			HasPricing:    true,
+			Category:      "potential_cost_saving",
 		},
 		"resource_2": {
 			ResourceName:  "resource_name_2",
 			ResourceCount: 3,
-			TotalSpent:    100,
+			TotalSpent:    0, // No cost - unused resource
 			Status:        1,
 			ErrorMessage:  "description",
 			EventTime:     123456,
+			HasPricing:    false,
+			Category:      "unused_resource",
 		},
 	}
 

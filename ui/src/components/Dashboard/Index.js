@@ -4,6 +4,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { useNavigate } from "react-router-dom";
 import { setHistory } from "../../utils/History";
 import { Button } from "@mui/material";
+import { Card, CardContent, Typography } from "@mui/material";
 
 import PropTypes from "prop-types";
 import FilterBar from "./FilterBar";
@@ -89,6 +90,46 @@ const DashboardIndex = ({
             <ExecutionIndex />
           </Grid>
         </Grid>
+      </Box>
+
+      {/* Overview Description */}
+      <Box mb={3}>
+        <Card
+          style={{
+            backgroundColor: "#f0f9ff",
+            border: "1px solid #e0f2fe"
+          }}
+        >
+          <CardContent style={{ padding: "20px" }}>
+            <Typography
+              variant="h5"
+              style={{
+                fontFamily: "MuseoModerno",
+                fontWeight: "bold",
+                color: "#1565c0",
+                marginBottom: "10px",
+              }}
+            >
+              🔍 Cloud Resource Analysis Dashboard
+            </Typography>
+            <Typography style={{ color: "#546e7a", lineHeight: "1.6" }}>
+              Finala helps you optimize your cloud infrastructure by identifying
+              two key categories:
+              <br />
+              <strong style={{ color: "#ff6b35" }}>
+                💰 Potential Cost Saving Resources
+              </strong>{" "}
+              - Resources with pricing data that can save you money when
+              optimized.
+              <br />
+              <strong style={{ color: "#4caf50" }}>
+                🗑️ Unused Resources
+              </strong>{" "}
+              - Resources without direct costs that can be removed to improve
+              security and management.
+            </Typography>
+          </CardContent>
+        </Card>
       </Box>
 
       <FilterBar />

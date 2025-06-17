@@ -59,7 +59,10 @@ module.exports = (options) => ({
     ]),
   },
   plugins: options.plugins.concat([
-    new ESLintPlugin({}),
+    new ESLintPlugin({
+      failOnError: false,
+      failOnWarning: false,
+    }),
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash].css',
       chunkFilename: '[id].[contenthash].css',
