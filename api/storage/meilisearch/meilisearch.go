@@ -206,7 +206,7 @@ func (sm *StorageManager) GetSummary(executionID string, filters map[string]stri
 			// PriceDetectedFields are embedded, so PricePerMonth should be a top-level field in Data
 			pricePerMonth, ppmOK := dataField["PricePerMonth"].(float64)
 			hasPricing := ppmOK && pricePerMonth > 0
-			
+
 			if !hasPricing {
 				// Some resources like Lambda might not have PricePerMonth directly.
 				// Handle this gracefully, e.g. by attempting to get PricePerHour or setting to 0.
@@ -223,14 +223,14 @@ func (sm *StorageManager) GetSummary(executionID string, filters map[string]stri
 			currentSummary.ResourceCount++
 			currentSummary.TotalSpent += pricePerMonth
 			currentSummary.HasPricing = hasPricing
-			
+
 			// Categorize based on pricing data
 			if hasPricing {
 				currentSummary.Category = "potential_cost_saving"
 			} else {
 				currentSummary.Category = "unused_resource"
 			}
-			
+
 			// Status, ErrorMessage, EventTime are already set from service_status or will be default if no status event.
 
 			summary[resourceName] = currentSummary
