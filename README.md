@@ -79,6 +79,9 @@ Finala provides comprehensive visibility into your cloud spending by identifying
 - **[API Reference](docs/api-reference.md)** - REST API documentation
 - **[Troubleshooting](docs/troubleshooting.md)** - Common issues and solutions
 
+## Screenshots
+![Finala Dashboard](docs/images/dashboard-metrics.png)
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

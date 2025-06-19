@@ -139,6 +139,14 @@ ec2:
 
 ## UI Configuration (`configuration/ui.yaml`)
 
+The UI configuration controls the web interface settings and API connection. When properly configured, you'll see the login screen and dashboard as shown below:
+
+![Finala Login Screen](images/login-page.png)
+
+After logging in, you'll see the main dashboard showing resource metrics and potential savings:
+
+![Finala Dashboard](images/dashboard-metrics.png)
+
 The UI configuration is minimal and primarily controls the connection to the API.
 
 ```yaml
