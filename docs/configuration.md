@@ -75,7 +75,7 @@ providers:
         regions:
           - us-east-1
           - us-west-2
-        # Authentication methods (choose one):
+        # Authentication methods (see AWS Setup Guide for details):
         # access_key: your_access_key
         # secret_key: your_secret_key
         # profile: your_aws_profile
@@ -84,45 +84,7 @@ providers:
       # Resource-specific metrics configuration
 ```
 
-### AWS Account Configuration
-
-#### Multiple Accounts
-
-```yaml
-providers:
-  aws:
-    accounts:
-      - name: production
-        regions: [us-east-1, us-west-2]
-        access_key: prod_access_key
-        secret_key: prod_secret_key
-      
-      - name: development
-        regions: [us-east-1]
-        profile: dev-profile
-      
-      - name: staging
-        regions: [eu-west-1, eu-central-1]
-        role: arn:aws:iam::123456789012:role/FinalaRole
-```
-
-#### Authentication Methods
-
-1. **Access Keys** (Direct credentials):
-```yaml
-access_key: your_access_key
-secret_key: your_secret_key
-```
-
-2. **AWS Profile** (Shared credentials file):
-```yaml
-profile: your_aws_profile
-```
-
-3. **IAM Role** (Cross-account access):
-```yaml
-role: arn:aws:iam::123456789012:role/FinalaRole
-```
+**Note**: For detailed AWS authentication setup, see the [AWS Setup Guide](aws-setup.md).
 
 ### Resource Metrics Configuration
 
@@ -320,9 +282,6 @@ You can override configuration values using environment variables:
 
 | Environment Variable | Description |
 |---------------------|-------------|
-| `AWS_ACCESS_KEY_ID` | AWS access key |
-| `AWS_SECRET_ACCESS_KEY` | AWS secret key |
-| `AWS_SESSION_TOKEN` | AWS session token (for temporary credentials) |
 | `OVERRIDE_API_ENDPOINT` | API server endpoint |
 
 ### Meilisearch Configuration
@@ -337,8 +296,8 @@ You can override configuration values using environment variables:
 
 1. **Never commit credentials to version control**
 2. **Use environment variables for sensitive data**
-3. **Rotate AWS credentials regularly**
-4. **Use IAM roles instead of access keys when possible**
+3. **Secure Meilisearch master key**
+4. **Use strong authentication passwords**
 
 ### Performance
 
@@ -396,7 +355,7 @@ providers:
     accounts:
       - name: production
         regions: [us-east-1, us-west-2]
-        role: arn:aws:iam::123456789012:role/FinalaRole
+        # Configure authentication (see AWS Setup Guide)
 ```
 
 ### Development Setup
@@ -425,5 +384,5 @@ providers:
     accounts:
       - name: development
         regions: [us-east-1]
-        profile: dev-profile
+        # Configure authentication (see AWS Setup Guide)
 ``` 

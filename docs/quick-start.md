@@ -20,7 +20,7 @@ This option uses pre-built Docker images from Docker Hub, making it faster to de
 #### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/similarweb/finala.git
+git clone https://github.com/qburst/finala.git
 cd finala
 ```
 
@@ -79,7 +79,7 @@ This option builds Finala from source code, which is useful for development or w
 #### Step 1: Clone and Build
 
 ```bash
-git clone https://github.com/similarweb/finala.git
+git clone https://github.com/qburst/finala.git
 cd finala
 docker-compose up -d --build
 ```
@@ -93,47 +93,6 @@ This will:
 #### Step 2: Configure and Access
 
 Follow the same steps as Option 1 for AWS credentials and web interface access.
-
-## Initial Configuration
-
-### Authentication Setup
-
-By default, Finala uses the following credentials:
-- **Username**: `admin`
-- **Password**: `test`
-
-To customize authentication:
-
-1. Edit `configuration/api.yaml`:
-```yaml
-auth:
-  username: your_username
-  password: your_secure_password
-```
-
-2. Restart the API service:
-```bash
-docker-compose restart api
-```
-
-### AWS Account Configuration
-
-Configure your AWS accounts in `configuration/collector.yaml`:
-
-```yaml
-providers:
-  aws:
-    accounts:
-      - name: production
-        regions:
-          - us-east-1
-          - us-west-2
-        # Uncomment and configure one of these authentication methods:
-        # access_key: your_access_key
-        # secret_key: your_secret_key
-        # profile: your_aws_profile
-        # role: arn:aws:iam::123456789012:role/FinalaRole
-```
 
 ## First Run
 
@@ -165,41 +124,25 @@ docker-compose -f docker-compose-hub.yaml up -d
 
 ## Troubleshooting
 
-### Common Issues
+If you encounter issues during setup or first run:
 
-**Services not starting:**
-```bash
-# Check service status
-docker-compose ps
+1. **Check service status**:
+   ```bash
+   docker-compose -f docker-compose-hub.yaml ps
+   ```
 
-# View logs for specific service
-docker-compose logs api
-docker-compose logs collector
-```
+2. **View service logs**:
+   ```bash
+   docker-compose -f docker-compose-hub.yaml logs [service-name]
+   ```
 
-**Authentication issues:**
-- Verify credentials in `configuration/api.yaml`
-- Check that the API service is running
-- Clear browser cache and cookies
+3. **Common quick fixes**:
+   - **Services not starting**: Check port conflicts and system resources
+   - **Authentication issues**: Verify credentials in `configuration/api.yaml`
+   - **AWS access problems**: Check credentials and permissions
+   - **No resources found**: Verify AWS account configuration
 
-**AWS access problems:**
-- Verify AWS credentials are set correctly
-- Check AWS permissions (see [AWS Setup Guide](aws-setup.md))
-- Ensure regions are accessible
-
-**Resource collection issues:**
-- Check collector logs for specific errors
-- Verify AWS account configuration
-- Ensure CloudWatch metrics are available
-
-### Getting Help
-
-If you encounter issues:
-
-1. Check the [Troubleshooting Guide](troubleshooting.md)
-2. Review service logs: `docker-compose logs [service-name]`
-3. Verify configuration files are properly formatted
-4. Open an issue on GitHub with detailed error information
+For detailed troubleshooting and solutions, see the **[Troubleshooting Guide](troubleshooting.md)**.
 
 ## Next Steps
 
