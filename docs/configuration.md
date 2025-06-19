@@ -106,50 +106,14 @@ ec2:
       value: 40  # Less than 40% CPU utilization
 ```
 
-#### RDS Databases
+**How EC2 CPU Check Works:**
+- **Time Period**: Looks at the last 7 days (168 hours)
+- **Aggregation**: Collects 24-hour periods within those 7 days
+- **Statistic**: Uses `Maximum` to find the highest CPU usage in each 24-hour period
+- **Detection**: If the maximum CPU utilization in any 24-hour period was **less than 40%**, the instance is considered underutilized
+- **Result**: Instances that never exceeded 40% CPU in the last 7 days are flagged for potential downsizing or termination
 
-```yaml
-rds:
-  - description: Connection count
-    enable: true
-    metrics:
-      - name: DatabaseConnections
-        statistic: Sum
-    period: 24h 
-    start_time: 168h
-    constraint:
-      operator: "=="
-      value: 0  # No connections
-  - description: CPU Utilization
-    enable: true
-    metrics:
-      - name: CPUUtilization
-        statistic: Maximum
-    period: 24h
-    start_time: 168h
-    constraint:
-      operator: "<"
-      value: 40  # Less than 40% CPU
-```
-
-#### DynamoDB Tables
-
-```yaml
-dynamodb:
-  - description: Provisioned read capacity units
-    enable: true
-    metrics:
-      - name: ConsumedReadCapacityUnits
-        statistic: Sum
-      - name: ProvisionedReadCapacityUnits
-        statistic: Average
-    period: 24h 
-    start_time: 168h
-    constraint:
-      formula: ( ConsumedReadCapacityUnits / 7 / 86400 ) / ProvisionedReadCapacityUnits * 100
-      operator: "<"
-      value: 80  # Less than 80% utilization
-```
+**Example**: If an EC2 instance had 40% maximum CPU under over the last 7 days, it would be detected as underutilized.
 
 ### Metric Configuration Options
 

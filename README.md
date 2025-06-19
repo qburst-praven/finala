@@ -71,7 +71,8 @@ Finala provides comprehensive visibility into your cloud spending by identifying
 
 ## Documentation
 
-- **[Quick Start Guide](docs/quick-start.md)** - Detailed setup instructions
+- **[Quick Start Guide](docs/quick-start.md)** - Get Finala up and running quickly
+- **[Installation Guide](docs/installation.md)** - Comprehensive installation scenarios
 - **[Configuration Guide](docs/configuration.md)** - Complete configuration reference
 - **[Architecture Overview](docs/architecture.md)** - System design and components
 - **[AWS Setup](docs/aws-setup.md)** - AWS permissions and configuration

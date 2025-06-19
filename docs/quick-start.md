@@ -6,7 +6,7 @@ Get Finala up and running in minutes.
 
 - Docker & Docker Compose
 - AWS credentials with appropriate permissions
-- 4GB RAM available
+- 2GB RAM available (4GB recommended for large AWS environments)
 
 ## Quick Setup
 
