@@ -6,7 +6,7 @@
 
 ![Finala Logo](docs/images/main-logo.png)
 
-## Overview - for Finala
+## Overview
 
 Finala is an open-source cloud resource scanner that analyzes, discloses, presents, and notifies about wasteful and unused resources across your cloud infrastructure. It helps organizations achieve two primary objectives: **cost optimization** and **unused resource detection**.
 
