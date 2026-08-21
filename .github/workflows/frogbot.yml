@@ -2,7 +2,7 @@ name: "Frogbot Scan"
 on:
   pull_request:
     types: [opened, synchronize]
-  workflow_dispatch: # Allows manual runs
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,7 +13,19 @@ jobs:
   scan-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: jfrog/frogbot@v3
+      # Step 1: Check out code
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Go (Required for Frogbot to resolve go.mod dependencies)
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      # Step 3: Run Frogbot SCA Scan ONLY
+      - name: Run Frogbot
+        uses: jfrog/frogbot@v3
         env:
           JF_URL: ${{ secrets.JF_URL }}
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
