@@ -49,6 +49,7 @@
     "webpack-hot-middleware": "^2.26.1"
   },
   "dependencies": {
+    "lodash": "4.17.11",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@material-table/core": "^6.1.10",
